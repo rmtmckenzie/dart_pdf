@@ -176,7 +176,18 @@ class PdfGraphics {
     buf.putString(" Td ${font.name} ");
     buf.putNum(size);
     buf.putString(" Tf ");
-    buf.putText(s);
+    if (font.unicode && font is PdfTtfFont) {
+      buf.putBytes(latin1.encode('('));
+      final runes = s.runes;
+      final bytes = List<int>();
+      for (var rune in runes) {
+        bytes.add(font.unicodeCMap(rune));
+      }
+      buf.putTextBytes(bytes);
+      buf.putBytes(latin1.encode(')'));
+    } else {
+      buf.putText(s);
+    }
     buf.putString(" Tj ET\n");
   }
 
