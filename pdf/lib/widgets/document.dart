@@ -21,6 +21,16 @@ class Document {
 
   final PdfDocument document;
 
+  TextStyle _defaultTextStyle;
+
+  TextStyle get defaultTextStyle {
+    if (_defaultTextStyle == null) {
+      _defaultTextStyle =
+          TextStyle(color: PdfColor.black, font: PdfFont.helvetica(document));
+    }
+    return _defaultTextStyle;
+  }
+
   Document({PdfPageMode pageMode = PdfPageMode.none, DeflateCallback deflate})
       : document = PdfDocument(pageMode: pageMode, deflate: deflate);
 
