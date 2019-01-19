@@ -48,9 +48,48 @@ class Document {
 class Page extends StatelessWidget {
   final PdfPageFormat pageFormat;
   final Widget child;
+  final EdgeInsets margin;
 
-  Page({this.pageFormat = PdfPageFormat.a4, this.child}) : super() {
+  Page(
+      {this.pageFormat = PdfPageFormat.a4,
+      this.child,
+      this.margin = const EdgeInsets.all(10.0 * PdfPageFormat.mm)})
+      : super();
+
+  @override
+  void debugPaint(Context context) {
+    context.canvas
+      ..setColor(PdfColor.lightGreen)
+      ..moveTo(box.x, box.y)
+      ..lineTo(box.r, box.y)
+      ..lineTo(box.r, box.t)
+      ..lineTo(box.x, box.t)
+      ..moveTo(box.x + margin.left, box.y + margin.bottom)
+      ..lineTo(box.x + margin.left, box.t - margin.top)
+      ..lineTo(box.r - margin.right, box.t - margin.top)
+      ..lineTo(box.r - margin.right, box.y + margin.bottom)
+      ..fillPath();
+  }
+
+  @override
+  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
     box = PdfRect(0.0, 0.0, pageFormat.dimension.x, pageFormat.dimension.y);
+    if (child != null) {
+      final childConstraints = BoxConstraints(
+          minWidth: constraints.minWidth,
+          minHeight: constraints.minHeight,
+          maxWidth: constraints.hasBoundedWidth
+              ? constraints.maxWidth - margin.horizontal
+              : margin.horizontal,
+          maxHeight: constraints.hasBoundedHeight
+              ? constraints.maxHeight - margin.vertical
+              : margin.vertical);
+      child.layout(childConstraints, parentUsesSize: parentUsesSize);
+      child.box = PdfRect(margin.left, margin.top, child.box.w, child.box.h);
+      // Move the child to the top left of the page
+      child.box = PdfRect(box.x + child.box.x,
+          box.y - child.box.y + box.h - child.box.h, child.box.w, child.box.h);
+    }
   }
 
   @override

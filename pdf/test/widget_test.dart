@@ -43,6 +43,7 @@ void main() {
 
     pdf.addPage(Page(
         pageFormat: PdfPageFormat(400.0, 400.0),
+        margin: EdgeInsets.all(10.0),
         child: Column(children: <Widget>[
           Text("Hello World", style: helvetica, textScaleFactor: 2.0),
           Text("How are you?", style: helvetica),
