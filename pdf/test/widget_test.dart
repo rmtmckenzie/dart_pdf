@@ -46,15 +46,21 @@ void main() {
         child: Column(children: <Widget>[
           Text("Hello World", style: helvetica, textScaleFactor: 2.0),
           Text("How are you?", style: helvetica),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-            Image(im),
-            Shape(shape, width: 24.0, height: 27.0, fillColor: PdfColor.red),
-            Column(children: <Widget>[
-              Text("(", style: symbol),
-              Text("4", style: symbol),
-            ]),
-          ]),
-          Text(lorem, style: helvetica),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Image(im),
+                Shape(shape,
+                    width: 24.0, height: 27.0, fillColor: PdfColor.red),
+                Column(children: <Widget>[
+                  Text("(", style: symbol),
+                  Text("4", style: symbol),
+                ]),
+              ]),
+          Padding(
+              padding: EdgeInsets.only(left: 30, top: 20),
+              child: Text(lorem, style: helvetica)),
+          Padding(padding: EdgeInsets.all(20.0)),
           Text("That's all Folks!",
               textAlign: TextAlign.center,
               style: helvetica.copyWith(

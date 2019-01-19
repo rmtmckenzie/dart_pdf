@@ -16,6 +16,7 @@
 
 part of widget;
 
+@immutable
 class BoxConstraints {
   /// The minimum width that satisfies the constraints.
   final double minWidth;
@@ -59,5 +60,55 @@ class BoxConstraints {
 
   double constrainHeight([double height = double.infinity]) {
     return height.clamp(minHeight, maxHeight);
+  }
+}
+
+@immutable
+class EdgeInsets {
+  const EdgeInsets.fromLTRB(this.left, this.top, this.right, this.bottom);
+
+  const EdgeInsets.all(double value)
+      : left = value,
+        top = value,
+        right = value,
+        bottom = value;
+
+  const EdgeInsets.only(
+      {this.left = 0.0, this.top = 0.0, this.right = 0.0, this.bottom = 0.0});
+
+  const EdgeInsets.symmetric({double vertical = 0.0, double horizontal = 0.0})
+      : left = horizontal,
+        top = vertical,
+        right = horizontal,
+        bottom = vertical;
+
+  static const EdgeInsets zero = EdgeInsets.only();
+
+  final double left;
+
+  final double top;
+
+  final double right;
+
+  final double bottom;
+
+  /// The total offset in the horizontal direction.
+  double get horizontal => left + right;
+
+  /// The total offset in the vertical direction.
+  double get vertical => top + bottom;
+
+  EdgeInsets copyWith({
+    double left,
+    double top,
+    double right,
+    double bottom,
+  }) {
+    return EdgeInsets.only(
+      left: left ?? this.left,
+      top: top ?? this.top,
+      right: right ?? this.right,
+      bottom: bottom ?? this.bottom,
+    );
   }
 }

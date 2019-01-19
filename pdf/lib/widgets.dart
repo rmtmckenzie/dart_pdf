@@ -22,6 +22,7 @@ import 'package:meta/meta.dart';
 import 'package:pdf/pdf.dart';
 import 'package:vector_math/vector_math_64.dart';
 
+part 'widgets/basic.dart';
 part 'widgets/document.dart';
 part 'widgets/flex.dart';
 part 'widgets/geometry.dart';
