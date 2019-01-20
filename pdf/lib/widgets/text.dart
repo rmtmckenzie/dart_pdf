@@ -87,7 +87,7 @@ class _Word {
 class Text extends Widget {
   final String data;
 
-  final TextStyle style;
+  TextStyle style;
 
   final TextAlign textAlign;
 
@@ -97,19 +97,23 @@ class Text extends Widget {
 
   Text(
     this.data, {
-    @required this.style,
+    this.style,
     this.textAlign = TextAlign.left,
     softWrap = true,
     this.textScaleFactor = 1.0,
     int maxLines,
   })  : maxLines = !softWrap ? 1 : maxLines,
-        assert(data != null),
-        assert(style != null);
+        assert(data != null);
 
   final _words = List<_Word>();
 
   @override
-  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
+    if (style == null) {
+      style = context.textStyle;
+    }
+
     final cw = constraints.hasBoundedWidth
         ? constraints.maxWidth
         : constraints.constrainWidth();

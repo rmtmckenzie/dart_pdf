@@ -24,7 +24,8 @@ class Image extends Widget {
       : aspectRatio = (image.height.toDouble() / image.width.toDouble());
 
   @override
-  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
     final w = constraints.hasBoundedWidth
         ? constraints.maxWidth
         : constraints.constrainWidth(image.width.toDouble());
@@ -62,7 +63,8 @@ class Shape extends Widget {
         aspectRatio = height / width;
 
   @override
-  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
     final w = constraints.hasBoundedWidth
         ? constraints.maxWidth
         : constraints.constrainWidth(width);

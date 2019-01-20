@@ -28,8 +28,8 @@ void main() {
 
     var pdf = Document(deflate: zlib.encode);
 
-    final helvetica = pdf.defaultTextStyle;
-    final symbol = helvetica.copyWith(font: PdfFont.zapfDingbats(pdf.document));
+    final symbol =
+        pdf.defaultTextStyle.copyWith(font: PdfFont.zapfDingbats(pdf.document));
 
     final imData = zlib.decode(base64.decode(
         "eJz7//8/w388uOTCT6a4Ez96Q47++I+OI479mEVALyNU7z9seuNP/mAm196Ekz8YR+0dWHtBmJC9S+7/Zog89iMIKLYaHQPVJGLTD7MXpDfq+I9goNhPdPPDjv3YlnH6Jye6+2H21l/6yeB/4HsSDr1bQXrRwq8HqHcGyF6QXp9933N0tn/7Y7vn+/9gLPaih0PDlV9MIAzVm6ez7dsfzW3f/oMwzAx0e7FhoJutdbcj9MKw9frnL2J2POfBpxeEg478YLba/X0Wsl6lBXf+s0bP/s8ePXeWePJCvPEJNYMRZIYWSO/cq/9Z/Nv+M4bO+M8YDjFDJGkhzvSE7A6jRTdnsQR2wfXCMLHuMC5byyidvGgWE5JeZDOIcYdR+TpmkBno+mFmAAC+DGhl"));
@@ -45,8 +45,8 @@ void main() {
         pageFormat: PdfPageFormat(400.0, 400.0),
         margin: EdgeInsets.all(10.0),
         child: Column(children: <Widget>[
-          Text("Hello World", style: helvetica, textScaleFactor: 2.0),
-          Text("How are you?", style: helvetica),
+          Text("Hello World", textScaleFactor: 2.0),
+          Text("How are you?"),
           Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -59,13 +59,12 @@ void main() {
                 ]),
               ]),
           Padding(
-              padding: EdgeInsets.only(left: 30, top: 20),
-              child: Text(lorem, style: helvetica)),
+              padding: EdgeInsets.only(left: 30, top: 20), child: Text(lorem)),
           Padding(padding: EdgeInsets.all(20.0)),
           Text("That's all Folks!",
               textAlign: TextAlign.center,
-              style: helvetica.copyWith(
-                  font: PdfFont.timesBoldItalic(pdf.document)),
+              style: pdf.defaultTextStyle
+                  .copyWith(font: PdfFont.timesBoldItalic(pdf.document)),
               textScaleFactor: 3.0),
         ])));
 

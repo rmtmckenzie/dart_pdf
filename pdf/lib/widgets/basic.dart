@@ -26,7 +26,8 @@ class Padding extends SingleChildWidget {
   final EdgeInsets padding;
 
   @override
-  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
     if (child != null) {
       final childConstraints = BoxConstraints(
           minWidth: constraints.minWidth,
@@ -37,7 +38,7 @@ class Padding extends SingleChildWidget {
           maxHeight: constraints.hasBoundedHeight
               ? constraints.maxHeight - padding.vertical
               : double.infinity);
-      child.layout(childConstraints, parentUsesSize: parentUsesSize);
+      child.layout(context, childConstraints, parentUsesSize: parentUsesSize);
       box = PdfRect(
           0.0,
           0.0,

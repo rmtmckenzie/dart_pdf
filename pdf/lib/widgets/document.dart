@@ -39,8 +39,8 @@ class Document {
     final canvas = pdfPage.getGraphics();
     final constraints = BoxConstraints(
         maxWidth: page.pageFormat.width, maxHeight: page.pageFormat.height);
-    page.layout(constraints);
-    final context = Context(pdfPage, canvas);
+    final context = Context(pdfPage, defaultTextStyle, canvas);
+    page.layout(context, constraints);
     page.paint(context);
   }
 }
@@ -72,7 +72,8 @@ class Page extends StatelessWidget {
   }
 
   @override
-  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
     box = PdfRect(0.0, 0.0, pageFormat.dimension.x, pageFormat.dimension.y);
     if (child != null) {
       final childConstraints = BoxConstraints(
@@ -84,7 +85,7 @@ class Page extends StatelessWidget {
           maxHeight: constraints.hasBoundedHeight
               ? constraints.maxHeight - margin.vertical
               : margin.vertical);
-      child.layout(childConstraints, parentUsesSize: parentUsesSize);
+      child.layout(context, childConstraints, parentUsesSize: parentUsesSize);
       child.box = PdfRect(margin.left, margin.top, child.box.w, child.box.h);
       // Move the child to the top left of the page
       child.box = PdfRect(box.x + child.box.x,

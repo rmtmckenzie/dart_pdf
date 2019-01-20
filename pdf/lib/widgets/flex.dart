@@ -202,7 +202,8 @@ class Flex extends MultiChildWidget {
   }
 
   @override
-  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
     // Determine used flex factor, size inflexible items, calculate free space.
     int totalFlex = 0;
     final totalChildren = children.length;
@@ -259,7 +260,7 @@ class Flex extends MultiChildWidget {
               break;
           }
         }
-        child.layout(innerConstraints, parentUsesSize: true);
+        child.layout(context, innerConstraints, parentUsesSize: true);
         allocatedSize += _getMainSize(child);
         crossSize = math.max(crossSize, _getCrossSize(child));
       }
@@ -327,7 +328,7 @@ class Flex extends MultiChildWidget {
                 break;
             }
           }
-          child.layout(innerConstraints, parentUsesSize: true);
+          child.layout(context, innerConstraints, parentUsesSize: true);
           final double childSize = _getMainSize(child);
           assert(childSize <= maxChildExtent);
           allocatedSize += childSize;
@@ -494,8 +495,9 @@ class Expanded extends SingleChildWidget {
   }
 
   @override
-  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
-    child.layout(constraints, parentUsesSize: parentUsesSize);
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
+    child.layout(context, constraints, parentUsesSize: parentUsesSize);
     box = child.box;
   }
 }

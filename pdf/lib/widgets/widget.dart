@@ -17,10 +17,11 @@
 part of widget;
 
 class Context {
+  final TextStyle textStyle;
   final PdfPage page;
   final PdfGraphics canvas;
 
-  const Context(this.page, this.canvas);
+  const Context(this.page, this.textStyle, this.canvas);
 }
 
 abstract class Widget {
@@ -31,7 +32,8 @@ abstract class Widget {
   Widget();
 
   @protected
-  void layout(BoxConstraints constraints, {parentUsesSize = false});
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false});
 
   @protected
   void paint(Context context) {
@@ -61,9 +63,10 @@ abstract class StatelessWidget extends Widget {
   StatelessWidget() : super();
 
   @override
-  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
     if (child != null) {
-      child.layout(constraints, parentUsesSize: parentUsesSize);
+      child.layout(context, constraints, parentUsesSize: parentUsesSize);
       box = child.box;
     } else {
       box = PdfRect.zero;
@@ -130,10 +133,12 @@ class LimitedBox extends SingleChildWidget {
   }
 
   @override
-  void layout(BoxConstraints constraints, {parentUsesSize = false}) {
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
     PdfPoint size;
     if (child != null) {
-      child.layout(_limitConstraints(constraints), parentUsesSize: true);
+      child.layout(context, _limitConstraints(constraints),
+          parentUsesSize: true);
       size = constraints.constrain(child.box.size);
     } else {
       size = _limitConstraints(constraints).constrain(PdfPoint.zero);
