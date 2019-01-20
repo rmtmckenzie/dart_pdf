@@ -160,7 +160,8 @@ class Text extends Widget {
     }
     w = math.max(w, x - space.w);
     h += lh;
-    box = PdfRect(0.0, 0.0, w, h);
+    box = PdfRect(0.0, 0.0, constraints.constrainWidth(w),
+        constraints.constrainHeight(h));
   }
 
   @override

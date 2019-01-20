@@ -49,7 +49,8 @@ class Padding extends SingleChildWidget {
               ? constraints.maxHeight
               : child.box.h + padding.vertical);
     } else {
-      box = PdfRect(0.0, 0.0, padding.horizontal, padding.vertical);
+      box = PdfRect(0.0, 0.0, constraints.constrainWidth(padding.horizontal),
+          constraints.constrainHeight(padding.vertical));
     }
   }
 

@@ -16,7 +16,6 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -61,12 +60,18 @@ void main() {
           Padding(
               padding: EdgeInsets.only(left: 30, top: 20), child: Text(lorem)),
           Padding(padding: EdgeInsets.all(20.0)),
+          Expanded(child: Text("Expanded")),
           Text("That's all Folks!",
               textAlign: TextAlign.center,
               style: pdf.defaultTextStyle
                   .copyWith(font: PdfFont.timesBoldItalic(pdf.document)),
               textScaleFactor: 3.0),
         ])));
+
+    pdf.addPage(Page(
+        pageFormat: PdfPageFormat(400.0, 200.0),
+        margin: EdgeInsets.all(10.0),
+        child: Text("Hello")));
 
     var file = File('widgets.pdf');
     file.writeAsBytesSync(pdf.document.save());

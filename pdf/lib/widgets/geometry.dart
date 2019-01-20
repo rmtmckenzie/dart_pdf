@@ -61,6 +61,11 @@ class BoxConstraints {
   double constrainHeight([double height = double.infinity]) {
     return height.clamp(minHeight, maxHeight);
   }
+
+  @override
+  String toString() {
+    return "BoxConstraint <$minWidth, $maxWidth> <$minHeight, $maxHeight>";
+  }
 }
 
 @immutable
