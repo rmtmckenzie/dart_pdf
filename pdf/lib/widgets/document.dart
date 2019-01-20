@@ -45,16 +45,15 @@ class Document {
   }
 }
 
-class Page extends StatelessWidget {
+class Page extends SingleChildWidget {
   final PdfPageFormat pageFormat;
-  final Widget child;
   final EdgeInsets margin;
 
   Page(
       {this.pageFormat = PdfPageFormat.a4,
-      this.child,
+      Widget child,
       this.margin = const EdgeInsets.all(10.0 * PdfPageFormat.mm)})
-      : super();
+      : super(child: child);
 
   @override
   void debugPaint(Context context) {
@@ -91,10 +90,5 @@ class Page extends StatelessWidget {
       child.box = PdfRect(box.x + child.box.x,
           box.y - child.box.y + box.h - child.box.h, child.box.w, child.box.h);
     }
-  }
-
-  @override
-  Widget build() {
-    return child;
   }
 }

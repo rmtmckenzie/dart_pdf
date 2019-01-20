@@ -78,7 +78,13 @@ abstract class StatelessWidget extends Widget {
     super.paint(context);
 
     if (child != null) {
+      final mat = Matrix4.identity();
+      mat.translate(box.x, box.y);
+      context.canvas
+        ..saveContext()
+        ..setTransform(mat);
       child.paint(context);
+      context.canvas.restoreContext();
     }
   }
 
@@ -96,7 +102,13 @@ abstract class SingleChildWidget extends Widget {
     super.paint(context);
 
     if (child != null) {
+      final mat = Matrix4.identity();
+      mat.translate(box.x, box.y);
+      context.canvas
+        ..saveContext()
+        ..setTransform(mat);
       child.paint(context);
+      context.canvas.restoreContext();
     }
   }
 }
