@@ -58,7 +58,8 @@ void main() {
                 ]),
               ]),
           Padding(
-              padding: EdgeInsets.only(left: 30, top: 20), child: Text(lorem)),
+              padding: EdgeInsets.only(left: 30, top: 20),
+              child: Text(lorem, textAlign: TextAlign.justify)),
           Padding(padding: EdgeInsets.all(20.0)),
           Expanded(child: Text("Expanded")),
           Text("That's all Folks!",
