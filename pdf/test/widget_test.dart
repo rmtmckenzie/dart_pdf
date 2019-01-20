@@ -34,9 +34,6 @@ void main() {
         "eJz7//8/w388uOTCT6a4Ez96Q47++I+OI479mEVALyNU7z9seuNP/mAm196Ekz8YR+0dWHtBmJC9S+7/Zog89iMIKLYaHQPVJGLTD7MXpDfq+I9goNhPdPPDjv3YlnH6Jye6+2H21l/6yeB/4HsSDr1bQXrRwq8HqHcGyF6QXp9933N0tn/7Y7vn+/9gLPaih0PDlV9MIAzVm6ez7dsfzW3f/oMwzAx0e7FhoJutdbcj9MKw9frnL2J2POfBpxeEg478YLba/X0Wsl6lBXf+s0bP/s8ePXeWePJCvPEJNYMRZIYWSO/cq/9Z/Nv+M4bO+M8YDjFDJGkhzvSE7A6jRTdnsQR2wfXCMLHuMC5byyidvGgWE5JeZDOIcYdR+TpmkBno+mFmAAC+DGhl"));
     final im = PdfImage(pdf.document, image: imData, width: 16, height: 20);
 
-    final lorem =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-
     pdf.addPage(Page(
         pageFormat: PdfPageFormat(400.0, 400.0),
         margin: EdgeInsets.all(10.0),
@@ -55,7 +52,7 @@ void main() {
               ]),
           Padding(
               padding: EdgeInsets.only(left: 30, top: 20),
-              child: Text(lorem, textAlign: TextAlign.justify)),
+              child: Lorem(textAlign: TextAlign.justify)),
           Padding(padding: EdgeInsets.all(20.0)),
           Expanded(child: Text("Expanded")),
           Text("That's all Folks!",

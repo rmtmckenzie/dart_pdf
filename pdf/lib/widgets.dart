@@ -27,5 +27,6 @@ part 'widgets/document.dart';
 part 'widgets/flex.dart';
 part 'widgets/geometry.dart';
 part 'widgets/image.dart';
+part 'widgets/placeholders.dart';
 part 'widgets/widget.dart';
 part 'widgets/text.dart';
