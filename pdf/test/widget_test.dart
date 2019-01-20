@@ -72,7 +72,7 @@ void main() {
     pdf.addPage(Page(
         pageFormat: PdfPageFormat(400.0, 200.0),
         margin: EdgeInsets.all(10.0),
-        child: Text("Hello")));
+        child: Placeholder()));
 
     var file = File('widgets.pdf');
     file.writeAsBytesSync(pdf.document.save());

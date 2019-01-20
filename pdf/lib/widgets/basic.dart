@@ -87,3 +87,44 @@ class Padding extends SingleChildWidget {
     }
   }
 }
+
+class Placeholder extends Widget {
+  final PdfColor color;
+  final double strokeWidth;
+  final double fallbackWidth;
+  final double fallbackHeight;
+
+  Placeholder(
+      {this.color = const PdfColor.fromInt(0xFF455A64),
+      this.strokeWidth = 2.0,
+      this.fallbackWidth = 400.0,
+      this.fallbackHeight = 400.0});
+
+  @override
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
+    box = PdfRect(
+        0.0,
+        0.0,
+        constraints.constrainWidth(
+            constraints.hasBoundedWidth ? constraints.maxWidth : fallbackWidth),
+        constraints.constrainHeight(constraints.hasBoundedHeight
+            ? constraints.maxHeight
+            : fallbackHeight));
+  }
+
+  @protected
+  void paint(Context context) {
+    super.paint(context);
+
+    context.canvas
+      ..setColor(color)
+      ..moveTo(box.x, box.y)
+      ..lineTo(box.r, box.t)
+      ..moveTo(box.x, box.t)
+      ..lineTo(box.r, box.y)
+      ..drawRect(box.x, box.y, box.w, box.h)
+      ..setLineWidth(strokeWidth)
+      ..strokePath();
+  }
+}
