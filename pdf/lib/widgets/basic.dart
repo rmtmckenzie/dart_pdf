@@ -243,10 +243,10 @@ class Align extends SingleChildWidget {
           PdfPoint.zero,
           constraints.constrain(PdfPoint(
               shrinkWrapWidth
-                  ? child.box.x * (widthFactor ?? 1.0)
+                  ? child.box.w * (widthFactor ?? 1.0)
                   : double.infinity,
               shrinkWrapHeight
-                  ? child.box.y * (heightFactor ?? 1.0)
+                  ? child.box.h * (heightFactor ?? 1.0)
                   : double.infinity)));
 
       child.box = alignment.inscribe(child.box.size, box);
