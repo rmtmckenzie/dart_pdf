@@ -198,6 +198,14 @@ class Text extends Widget {
         constraints.constrainHeight(h));
   }
 
+  @protected
+  void debugPaint(Context context) {
+    context.canvas
+      ..setColor(PdfColor.blue)
+      ..drawRect(box.x, box.y, box.w, box.h)
+      ..strokePath();
+  }
+
   @override
   void paint(Context context) {
     super.paint(context);
