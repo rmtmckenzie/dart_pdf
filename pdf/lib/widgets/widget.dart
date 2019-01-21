@@ -55,7 +55,7 @@ abstract class Widget {
 abstract class StatelessWidget extends Widget {
   Widget _widget;
 
-  Widget get child {
+  Widget get _child {
     if (_widget == null) _widget = build();
     return _widget;
   }
@@ -65,9 +65,9 @@ abstract class StatelessWidget extends Widget {
   @override
   void layout(Context context, BoxConstraints constraints,
       {parentUsesSize = false}) {
-    if (child != null) {
-      child.layout(context, constraints, parentUsesSize: parentUsesSize);
-      box = child.box;
+    if (_child != null) {
+      _child.layout(context, constraints, parentUsesSize: parentUsesSize);
+      box = _child.box;
     } else {
       box = PdfRect.zero;
     }
@@ -77,13 +77,13 @@ abstract class StatelessWidget extends Widget {
   void paint(Context context) {
     super.paint(context);
 
-    if (child != null) {
+    if (_child != null) {
       final mat = Matrix4.identity();
       mat.translate(box.x, box.y);
       context.canvas
         ..saveContext()
         ..setTransform(mat);
-      child.paint(context);
+      _child.paint(context);
       context.canvas.restoreContext();
     }
   }
@@ -117,44 +117,4 @@ abstract class MultiChildWidget extends Widget {
   MultiChildWidget({this.children = const <Widget>[]}) : super();
 
   final List<Widget> children;
-}
-
-class LimitedBox extends SingleChildWidget {
-  LimitedBox({
-    this.maxWidth = double.infinity,
-    this.maxHeight = double.infinity,
-    Widget child,
-  })  : assert(maxWidth != null && maxWidth >= 0.0),
-        assert(maxHeight != null && maxHeight >= 0.0),
-        super(child: child);
-
-  final double maxWidth;
-
-  final double maxHeight;
-
-  BoxConstraints _limitConstraints(BoxConstraints constraints) {
-    return BoxConstraints(
-        minWidth: constraints.minWidth,
-        maxWidth: constraints.hasBoundedWidth
-            ? constraints.maxWidth
-            : constraints.constrainWidth(maxWidth),
-        minHeight: constraints.minHeight,
-        maxHeight: constraints.hasBoundedHeight
-            ? constraints.maxHeight
-            : constraints.constrainHeight(maxHeight));
-  }
-
-  @override
-  void layout(Context context, BoxConstraints constraints,
-      {parentUsesSize = false}) {
-    PdfPoint size;
-    if (child != null) {
-      child.layout(context, _limitConstraints(constraints),
-          parentUsesSize: true);
-      size = constraints.constrain(child.box.size);
-    } else {
-      size = _limitConstraints(constraints).constrain(PdfPoint.zero);
-    }
-    box = PdfRect(box.x, box.y, size.x, size.y);
-  }
 }

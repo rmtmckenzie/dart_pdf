@@ -54,7 +54,9 @@ void main() {
               padding: EdgeInsets.only(left: 30, top: 20),
               child: Lorem(textAlign: TextAlign.justify)),
           Padding(padding: EdgeInsets.all(20.0)),
-          Expanded(child: Text("Expanded")),
+          Expanded(
+              child: Container(
+                  alignment: Alignment.center, child: Text("Expanded"))),
           Text("That's all Folks!",
               textAlign: TextAlign.center,
               style: pdf.defaultTextStyle
