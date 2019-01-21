@@ -86,9 +86,6 @@ class Page extends SingleChildWidget {
               : margin.vertical);
       child.layout(context, childConstraints, parentUsesSize: parentUsesSize);
       child.box = PdfRect(margin.left, margin.top, child.box.w, child.box.h);
-      // Move the child to the top left of the page
-      child.box = PdfRect(box.x + child.box.x,
-          box.y - child.box.y + box.h - child.box.h, child.box.w, child.box.h);
     }
   }
 }
