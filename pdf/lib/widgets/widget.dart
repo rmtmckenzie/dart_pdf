@@ -26,8 +26,8 @@ class Context {
 
 abstract class Widget {
   PdfRect box;
-  int flex = 0;
-  FlexFit fit = FlexFit.loose;
+  int _flex = 0;
+  FlexFit _fit = FlexFit.loose;
 
   Widget();
 

@@ -94,10 +94,10 @@ class Flex extends MultiChildWidget {
       double maxFlexFractionSoFar = 0.0;
 
       for (var child in children) {
-        final int flex = child.flex;
+        final int flex = child._flex;
         totalFlex += flex;
         if (flex > 0) {
-          final double flexFraction = childSize(child, extent) / child.flex;
+          final double flexFraction = childSize(child, extent) / child._flex;
           maxFlexFractionSoFar = math.max(maxFlexFractionSoFar, flexFraction);
         } else {
           inflexibleSpace += childSize(child, extent);
@@ -116,7 +116,7 @@ class Flex extends MultiChildWidget {
       double inflexibleSpace = 0.0;
       double maxCrossSize = 0.0;
       for (var child in children) {
-        final int flex = child.flex;
+        final int flex = child._flex;
         totalFlex += flex;
         double mainSize;
         double crossSize;
@@ -143,7 +143,7 @@ class Flex extends MultiChildWidget {
 
       // Size remaining (flexible) items, find the maximum cross size.
       for (var child in children) {
-        final int flex = child.flex;
+        final int flex = child._flex;
         if (flex > 0)
           maxCrossSize =
               math.max(maxCrossSize, childSize(child, spacePerFlex * flex));
@@ -219,21 +219,21 @@ class Flex extends MultiChildWidget {
         0.0; // Sum of the sizes of the non-flexible children.
 
     for (var child in children) {
-      final int flex = child.flex;
+      final int flex = child._flex;
       if (flex > 0) {
         assert(() {
           final String dimension =
               direction == Axis.horizontal ? 'width' : 'height';
           if (!canFlex &&
               (mainAxisSize == MainAxisSize.max ||
-                  child.fit == FlexFit.tight)) {
+                  child._fit == FlexFit.tight)) {
             throw Exception(
                 'Flex children have non-zero flex but incoming $dimension constraints are unbounded.');
           } else {
             return true;
           }
         }());
-        totalFlex += child.flex;
+        totalFlex += child._flex;
       } else {
         BoxConstraints innerConstraints;
         if (crossAxisAlignment == CrossAxisAlignment.stretch) {
@@ -276,7 +276,7 @@ class Flex extends MultiChildWidget {
           canFlex && totalFlex > 0 ? (freeSpace / totalFlex) : double.nan;
 
       for (var child in children) {
-        final int flex = child.flex;
+        final int flex = child._flex;
         if (flex > 0) {
           final double maxChildExtent = canFlex
               ? (child == lastFlexChild
@@ -284,7 +284,7 @@ class Flex extends MultiChildWidget {
                   : spacePerFlex * flex)
               : double.infinity;
           double minChildExtent;
-          switch (child.fit) {
+          switch (child._fit) {
             case FlexFit.tight:
               assert(maxChildExtent < double.infinity);
               minChildExtent = maxChildExtent;
@@ -490,8 +490,8 @@ class Expanded extends SingleChildWidget {
     int flex = 1,
     @required Widget child,
   }) : super(child: child) {
-    this.flex = flex;
-    this.fit = FlexFit.tight;
+    this._flex = flex;
+    this._fit = FlexFit.tight;
   }
 
   @override
