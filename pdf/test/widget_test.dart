@@ -38,8 +38,21 @@ void main() {
         pageFormat: PdfPageFormat(400.0, 400.0),
         margin: EdgeInsets.all(10.0),
         child: Column(children: <Widget>[
-          Text("Hello World", textScaleFactor: 2.0),
-          Text("How are you?"),
+          Container(
+              padding: EdgeInsets.all(5),
+              margin: EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                  color: PdfColor.amber,
+                  border: BoxBorder(
+                      top: true,
+                      bottom: true,
+                      left: true,
+                      right: true,
+                      width: 2.0)),
+              child: Text("Hello World",
+                  textScaleFactor: 2.0, textAlign: TextAlign.center)),
+          Align(alignment: Alignment.topLeft, child: Text("How are you?")),
+          Padding(padding: EdgeInsets.all(5.0)),
           Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -53,15 +66,18 @@ void main() {
           Padding(
               padding: EdgeInsets.only(left: 30, top: 20),
               child: Lorem(textAlign: TextAlign.justify)),
-          Padding(padding: EdgeInsets.all(20.0)),
           Expanded(
               child: Container(
                   alignment: Alignment.center, child: Text("Expanded"))),
-          Text("That's all Folks!",
-              textAlign: TextAlign.center,
-              style: pdf.defaultTextStyle
-                  .copyWith(font: PdfFont.timesBoldItalic(pdf.document)),
-              textScaleFactor: 3.0),
+          Container(
+              padding: EdgeInsets.only(top: 5),
+              decoration:
+                  BoxDecoration(border: BoxBorder(top: true, width: 1.0)),
+              child: Text("That's all Folks!",
+                  textAlign: TextAlign.center,
+                  style: pdf.defaultTextStyle
+                      .copyWith(font: PdfFont.timesBoldItalic(pdf.document)),
+                  textScaleFactor: 3.0)),
         ])));
 
     pdf.addPage(Page(

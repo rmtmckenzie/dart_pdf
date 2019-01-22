@@ -16,22 +16,41 @@
 
 part of widget;
 
-enum DecorationPosition {
-  /// Paint the box decoration behind the children.
-  background,
+enum DecorationPosition { background, foreground }
 
-  /// Paint the box decoration in front of the children.
-  foreground,
+@immutable
+class BoxBorder {
+  const BoxBorder(
+      {this.left = false,
+      this.top = false,
+      this.right = false,
+      this.bottom = false,
+      this.color = PdfColor.black,
+      this.width = 1.0})
+      : assert(color != null),
+        assert(width != null),
+        assert(width >= 0.0);
+
+  final bool top;
+  final bool bottom;
+  final bool left;
+  final bool right;
+
+  /// The color of the border.
+  final PdfColor color;
+
+  /// The width of the border.
+  final double width;
 }
 
 @immutable
 class BoxDecoration {
-  const BoxDecoration({this.color, this.padding});
+  const BoxDecoration({this.color, this.border});
 
   /// The color to fill in the background of the box.
   final PdfColor color;
 
-  final EdgeInsets padding;
+  final BoxBorder border;
 }
 
 class DecoratedBox extends SingleChildWidget {
@@ -60,17 +79,62 @@ class DecoratedBox extends SingleChildWidget {
     }
   }
 
+  void _paintDecoration(Context context) {
+    if (decoration.color != null) {
+      context.canvas
+        ..setColor(decoration.color)
+        ..drawRect(box.x, box.y, box.w, box.h)
+        ..fillPath();
+    }
+
+    if (decoration.border != null &&
+        (decoration.border.top ||
+            decoration.border.bottom ||
+            decoration.border.left ||
+            decoration.border.right)) {
+      context.canvas
+        ..setColor(decoration.border.color)
+        ..setLineWidth(decoration.border.width);
+    }
+    if (decoration.border.top) {
+      context.canvas.drawLine(box.x, box.t, box.r, box.t);
+    }
+
+    if (decoration.border.right) {
+      if (!decoration.border.top) {
+        context.canvas.moveTo(box.r, box.t);
+      }
+      context.canvas.lineTo(box.r, box.y);
+    }
+
+    if (decoration.border.bottom) {
+      if (!decoration.border.right) {
+        context.canvas.moveTo(box.r, box.y);
+      }
+      context.canvas.lineTo(box.x, box.y);
+    }
+
+    if (decoration.border.left) {
+      if (!decoration.border.bottom) {
+        context.canvas.moveTo(box.x, box.y);
+      }
+      context.canvas.lineTo(box.x, box.t);
+    }
+
+    context.canvas.strokePath();
+  }
+
   @override
   void paint(Context context) {
     assert(box.w != null);
     assert(box.h != null);
 
     if (position == DecorationPosition.background) {
-      // Todo: Implement painting
+      _paintDecoration(context);
     }
     super.paint(context);
     if (position == DecorationPosition.foreground) {
-      // Todo: Implement painting
+      _paintDecoration(context);
     }
   }
 }
@@ -121,13 +185,6 @@ class Container extends StatelessWidget {
   /// The transformation matrix to apply before painting the container.
   final Matrix4 transform;
 
-  EdgeInsets get _paddingIncludingDecoration {
-    if (decoration == null || decoration.padding == null) return padding;
-    final EdgeInsets decorationPadding = decoration.padding;
-    if (padding == null) return decorationPadding;
-    return padding.add(decorationPadding);
-  }
-
   @override
   Widget build() {
     Widget current = child;
@@ -142,9 +199,7 @@ class Container extends StatelessWidget {
     if (alignment != null)
       current = Align(alignment: alignment, child: current);
 
-    final EdgeInsets effectivePadding = _paddingIncludingDecoration;
-    if (effectivePadding != null)
-      current = Padding(padding: effectivePadding, child: current);
+    if (padding != null) current = Padding(padding: padding, child: current);
 
     if (decoration != null)
       current = DecoratedBox(decoration: decoration, child: current);
