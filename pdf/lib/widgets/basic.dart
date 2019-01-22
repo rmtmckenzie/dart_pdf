@@ -16,6 +16,18 @@
 
 part of widget;
 
+enum BoxFit {
+  fill,
+  contain,
+  cover,
+  fitWidth,
+  fitHeight,
+
+  none,
+
+  scaleDown
+}
+
 class LimitedBox extends SingleChildWidget {
   LimitedBox({
     this.maxWidth = double.infinity,
@@ -287,4 +299,62 @@ class Center extends Align {
   Center({double widthFactor, double heightFactor, Widget child})
       : super(
             widthFactor: widthFactor, heightFactor: heightFactor, child: child);
+}
+
+/// Scales and positions its child within itself according to [fit].
+class FittedBox extends SingleChildWidget {
+  FittedBox({
+    this.fit = BoxFit.contain,
+    this.alignment = Alignment.center,
+    Widget child,
+  })  : assert(fit != null),
+        assert(alignment != null),
+        super(child: child);
+
+  /// How to inscribe the child into the space allocated during layout.
+  final BoxFit fit;
+
+  /// How to align the child within its parent's bounds.
+  final Alignment alignment;
+
+  @override
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
+    PdfPoint size;
+    if (child != null) {
+      child.layout(context, const BoxConstraints(), parentUsesSize: true);
+      size = constraints
+          .constrainSizeAndAttemptToPreserveAspectRatio(child.box.size);
+    } else {
+      size = constraints.smallest;
+    }
+    box = PdfRect.fromPoints(PdfPoint.zero, size);
+  }
+
+  @override
+  void paint(Context context) {
+    if (child != null) {
+      final PdfPoint childSize = child.box.size;
+      final FittedSizes sizes = applyBoxFit(fit, childSize, box.size);
+      final double scaleX = sizes.destination.x / sizes.source.x;
+      final double scaleY = sizes.destination.y / sizes.source.y;
+      final PdfRect sourceRect = alignment.inscribe(
+          sizes.source, PdfRect.fromPoints(PdfPoint.zero, childSize));
+      final PdfRect destinationRect =
+          alignment.inscribe(sizes.destination, box);
+
+      final mat =
+          Matrix4.translationValues(destinationRect.x, destinationRect.y, 0.0)
+            ..scale(scaleX, scaleY, 1.0)
+            ..translate(-sourceRect.x, -sourceRect.y);
+
+      context.canvas
+        ..saveContext()
+        ..drawRect(box.x, box.y, box.w, box.h)
+        ..clipPath()
+        ..setTransform(mat);
+      child.paint(context);
+      context.canvas.restoreContext();
+    }
+  }
 }

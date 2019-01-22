@@ -66,9 +66,7 @@ void main() {
           Padding(
               padding: EdgeInsets.only(left: 30, top: 20),
               child: Lorem(textAlign: TextAlign.justify)),
-          Expanded(
-              child: Container(
-                  alignment: Alignment.center, child: Text("Expanded"))),
+          Expanded(child: FittedBox(child: Text("Expanded"))),
           Container(
               padding: EdgeInsets.only(top: 5),
               decoration:

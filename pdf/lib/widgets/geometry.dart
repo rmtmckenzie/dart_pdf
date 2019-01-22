@@ -49,6 +49,12 @@ class BoxConstraints {
 
   bool get hasInfiniteHeight => minHeight >= double.infinity;
 
+  /// The biggest size that satisfies the constraints.
+  PdfPoint get biggest => PdfPoint(constrainWidth(), constrainHeight());
+
+  /// The smallest size that satisfies the constraints.
+  PdfPoint get smallest => PdfPoint(constrainWidth(0.0), constrainHeight(0.0));
+
   /// Whether there is exactly one width value that satisfies the constraints.
   bool get hasTightWidth => minWidth >= maxWidth;
 
@@ -69,6 +75,44 @@ class BoxConstraints {
 
   double constrainHeight([double height = double.infinity]) {
     return height.clamp(minHeight, maxHeight);
+  }
+
+  /// Returns a size that attempts to meet the following conditions, in order:
+  PdfPoint constrainSizeAndAttemptToPreserveAspectRatio(PdfPoint size) {
+    if (isTight) {
+      PdfPoint result = smallest;
+
+      return result;
+    }
+
+    double width = size.x;
+    double height = size.y;
+    assert(width > 0.0);
+    assert(height > 0.0);
+    final double aspectRatio = width / height;
+
+    if (width > maxWidth) {
+      width = maxWidth;
+      height = width / aspectRatio;
+    }
+
+    if (height > maxHeight) {
+      height = maxHeight;
+      width = height * aspectRatio;
+    }
+
+    if (width < minWidth) {
+      width = minWidth;
+      height = width / aspectRatio;
+    }
+
+    if (height < minHeight) {
+      height = minHeight;
+      width = height * aspectRatio;
+    }
+
+    PdfPoint result = PdfPoint(constrainWidth(width), constrainHeight(height));
+    return result;
   }
 
   /// Returns new box constraints with a tight width and/or height as close to
@@ -269,4 +313,96 @@ class Alignment {
 
   @override
   String toString() => "($x, $y)";
+}
+
+/// The pair of sizes returned by [applyBoxFit].
+@immutable
+class FittedSizes {
+  const FittedSizes(this.source, this.destination);
+
+  /// The size of the part of the input to show on the output.
+  final PdfPoint source;
+
+  /// The size of the part of the output on which to show the input.
+  final PdfPoint destination;
+}
+
+FittedSizes applyBoxFit(BoxFit fit, PdfPoint inputSize, PdfPoint outputSize) {
+  if (inputSize.y <= 0.0 ||
+      inputSize.x <= 0.0 ||
+      outputSize.y <= 0.0 ||
+      outputSize.x <= 0.0)
+    return const FittedSizes(PdfPoint.zero, PdfPoint.zero);
+
+  PdfPoint sourceSize, destinationSize;
+  switch (fit) {
+    case BoxFit.fill:
+      sourceSize = inputSize;
+      destinationSize = outputSize;
+      break;
+    case BoxFit.contain:
+      sourceSize = inputSize;
+      if (outputSize.x / outputSize.y > sourceSize.x / sourceSize.y)
+        destinationSize =
+            PdfPoint(sourceSize.x * outputSize.y / sourceSize.y, outputSize.y);
+      else
+        destinationSize =
+            PdfPoint(outputSize.x, sourceSize.y * outputSize.x / sourceSize.x);
+      break;
+    case BoxFit.cover:
+      if (outputSize.x / outputSize.y > inputSize.x / inputSize.y) {
+        sourceSize =
+            PdfPoint(inputSize.x, inputSize.x * outputSize.y / outputSize.x);
+      } else {
+        sourceSize =
+            PdfPoint(inputSize.y * outputSize.x / outputSize.y, inputSize.y);
+      }
+      destinationSize = outputSize;
+      break;
+    case BoxFit.fitWidth:
+      sourceSize =
+          PdfPoint(inputSize.x, inputSize.x * outputSize.y / outputSize.x);
+      destinationSize =
+          PdfPoint(outputSize.x, sourceSize.y * outputSize.x / sourceSize.x);
+      break;
+    case BoxFit.fitHeight:
+      sourceSize =
+          PdfPoint(inputSize.y * outputSize.x / outputSize.y, inputSize.y);
+      destinationSize =
+          PdfPoint(sourceSize.x * outputSize.y / sourceSize.y, outputSize.y);
+      break;
+    case BoxFit.none:
+      sourceSize = PdfPoint(math.min(inputSize.x, outputSize.x),
+          math.min(inputSize.y, outputSize.y));
+      destinationSize = sourceSize;
+      break;
+    case BoxFit.scaleDown:
+      sourceSize = inputSize;
+      destinationSize = inputSize;
+      final double aspectRatio = inputSize.x / inputSize.y;
+      if (destinationSize.y > outputSize.y)
+        destinationSize = PdfPoint(outputSize.y * aspectRatio, outputSize.y);
+      if (destinationSize.x > outputSize.x)
+        destinationSize = PdfPoint(outputSize.x, outputSize.x / aspectRatio);
+      break;
+  }
+  return FittedSizes(sourceSize, destinationSize);
+}
+
+PdfPoint transformPoint(Matrix4 transform, PdfPoint point) {
+  final Vector3 position3 = Vector3(point.x, point.y, 0.0);
+  final Vector3 transformed3 = transform.perspectiveTransform(position3);
+  return PdfPoint(transformed3.x, transformed3.y);
+}
+
+PdfRect transformRect(Matrix4 transform, PdfRect rect) {
+  final point1 = transformPoint(transform, rect.topLeft);
+  final point2 = transformPoint(transform, rect.topRight);
+  final point3 = transformPoint(transform, rect.bottomLeft);
+  final point4 = transformPoint(transform, rect.bottomRight);
+  return PdfRect.fromLTRB(
+      math.min(point1.x, math.min(point2.x, math.min(point3.x, point4.x))),
+      math.min(point1.y, math.min(point2.y, math.min(point3.y, point4.y))),
+      math.max(point1.x, math.max(point2.x, math.max(point3.x, point4.x))),
+      math.max(point1.y, math.max(point2.y, math.max(point3.y, point4.y))));
 }
