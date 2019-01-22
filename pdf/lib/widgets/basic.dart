@@ -282,3 +282,9 @@ class ConstrainedBox extends SingleChildWidget {
     }
   }
 }
+
+class Center extends Align {
+  Center({double widthFactor, double heightFactor, Widget child})
+      : super(
+            widthFactor: widthFactor, heightFactor: heightFactor, child: child);
+}
