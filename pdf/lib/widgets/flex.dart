@@ -439,15 +439,15 @@ class Flex extends MultiChildWidget {
   void paint(Context context) {
     super.paint(context);
 
+    final mat = Matrix4.identity();
+    mat.translate(box.x, box.y);
+    context.canvas
+      ..saveContext()
+      ..setTransform(mat);
     for (var child in children) {
-      final mat = Matrix4.identity();
-      mat.translate(box.x, box.y);
-      context.canvas
-        ..saveContext()
-        ..setTransform(mat);
       child.paint(context);
-      context.canvas.restoreContext();
     }
+    context.canvas.restoreContext();
   }
 }
 
