@@ -177,6 +177,15 @@ class BoxConstraints {
             maxHeight.clamp(constraints.minHeight, constraints.maxHeight));
   }
 
+  BoxConstraints copyWith(
+      {double minWidth, double maxWidth, double minHeight, double maxHeight}) {
+    return BoxConstraints(
+        minWidth: minWidth ?? this.minWidth,
+        maxWidth: maxWidth ?? this.maxWidth,
+        minHeight: minHeight ?? this.minHeight,
+        maxHeight: maxHeight ?? this.maxHeight);
+  }
+
   @override
   String toString() {
     return "BoxConstraint <$minWidth, $maxWidth> <$minHeight, $maxHeight>";
