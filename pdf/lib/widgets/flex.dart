@@ -399,14 +399,22 @@ class Flex extends MultiChildWidget {
     }
 
     // Position elements
+    final bool flipCrossAxis = (verticalDirection == VerticalDirection.down &&
+            direction == Axis.horizontal) ||
+        (verticalDirection == VerticalDirection.up &&
+            direction == Axis.vertical);
     double childMainPosition =
         flipMainAxis ? actualSize - leadingSpace : leadingSpace;
     for (var child in children) {
       double childCrossPosition;
       switch (crossAxisAlignment) {
         case CrossAxisAlignment.start:
+          childCrossPosition =
+              flipCrossAxis ? crossSize - _getCrossSize(child) : 0.0;
+          break;
         case CrossAxisAlignment.end:
-          childCrossPosition = 0.0;
+          childCrossPosition =
+              !flipCrossAxis ? crossSize - _getCrossSize(child) : 0.0;
           break;
         case CrossAxisAlignment.center:
           childCrossPosition = crossSize / 2.0 - _getCrossSize(child) / 2.0;
