@@ -135,6 +135,8 @@ class Text extends Widget {
   @override
   void layout(Context context, BoxConstraints constraints,
       {parentUsesSize = false}) {
+    _words.clear();
+
     if (style == null) {
       style = context.textStyle;
     }
