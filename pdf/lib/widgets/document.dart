@@ -49,11 +49,11 @@ class Page extends SingleChildWidget {
   final PdfPageFormat pageFormat;
   final EdgeInsets margin;
 
-  Page(
-      {this.pageFormat = PdfPageFormat.a4,
-      Widget child,
-      this.margin = const EdgeInsets.all(10.0 * PdfPageFormat.mm)})
-      : super(child: child);
+  Page({this.pageFormat = PdfPageFormat.a4, Widget child, EdgeInsets margin})
+      : margin = margin ??
+            EdgeInsets.fromLTRB(pageFormat.marginLeft, pageFormat.marginTop,
+                pageFormat.marginRight, pageFormat.marginBottom),
+        super(child: child);
 
   @override
   void debugPaint(Context context) {
