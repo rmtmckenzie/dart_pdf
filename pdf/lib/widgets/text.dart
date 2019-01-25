@@ -24,6 +24,7 @@ class TextStyle {
     this.fontSize = _defaultFontSize,
     this.letterSpacing = 1.0,
     this.wordSpacing = 1.0,
+    this.lineSpacing = 0.0,
     this.height = 1.0,
     this.background,
   })  : assert(font != null),
@@ -39,6 +40,8 @@ class TextStyle {
 
   final double letterSpacing;
 
+  final double lineSpacing;
+
   final double wordSpacing;
 
   final double height;
@@ -51,6 +54,7 @@ class TextStyle {
     double fontSize,
     double letterSpacing,
     double wordSpacing,
+    double lineSpacing,
     double height,
     PdfColor background,
   }) {
@@ -60,6 +64,7 @@ class TextStyle {
       fontSize: fontSize ?? this.fontSize,
       letterSpacing: letterSpacing ?? this.letterSpacing,
       wordSpacing: wordSpacing ?? this.wordSpacing,
+      lineSpacing: lineSpacing ?? this.lineSpacing,
       height: height ?? this.height,
       background: background ?? this.background,
     );
@@ -176,8 +181,8 @@ class Text extends Widget {
         if (maxLines != null && ++lines > maxLines) break;
 
         x = 0.0;
-        y += lh;
-        h += lh;
+        y += lh + style.lineSpacing;
+        h += lh + style.lineSpacing;
         lh = 0.0;
         if (y > ch) break;
         wCount = 0;
