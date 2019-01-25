@@ -16,6 +16,7 @@
 
 part of widget;
 
+@immutable
 class Context {
   final TextStyle textStyle;
   final PdfPage page;
