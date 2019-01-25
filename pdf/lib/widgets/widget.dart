@@ -53,18 +53,15 @@ abstract class Widget {
 }
 
 abstract class StatelessWidget extends Widget {
-  Widget _widget;
-
-  Widget get _child {
-    if (_widget == null) _widget = build();
-    return _widget;
-  }
+  Widget _child;
 
   StatelessWidget() : super();
 
   @override
   void layout(Context context, BoxConstraints constraints,
       {parentUsesSize = false}) {
+    if (_child == null) _child = build(context);
+
     if (_child != null) {
       _child.layout(context, constraints, parentUsesSize: parentUsesSize);
       box = _child.box;
@@ -89,7 +86,7 @@ abstract class StatelessWidget extends Widget {
   }
 
   @protected
-  Widget build();
+  Widget build(Context context);
 }
 
 abstract class SingleChildWidget extends Widget {

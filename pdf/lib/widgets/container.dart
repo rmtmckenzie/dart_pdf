@@ -195,7 +195,7 @@ class Container extends StatelessWidget {
   final Matrix4 transform;
 
   @override
-  Widget build() {
+  Widget build(Context context) {
     Widget current = child;
 
     if (child == null && (constraints == null || !constraints.isTight)) {
