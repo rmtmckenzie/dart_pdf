@@ -24,6 +24,7 @@ import 'package:vector_math/vector_math_64.dart';
 
 part 'widgets/basic.dart';
 part 'widgets/container.dart';
+part 'widgets/content.dart';
 part 'widgets/document.dart';
 part 'widgets/flex.dart';
 part 'widgets/geometry.dart';
