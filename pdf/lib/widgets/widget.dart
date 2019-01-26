@@ -22,6 +22,8 @@ class Context {
   final PdfPage page;
   final PdfGraphics canvas;
 
+  get pageNumber => page.pdfDocument.pdfPageList.pages.indexOf(page) + 1;
+
   const Context(this.page, this.textStyle, this.canvas);
 }
 
