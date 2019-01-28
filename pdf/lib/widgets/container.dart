@@ -36,11 +36,53 @@ class BoxBorder {
   final bool left;
   final bool right;
 
-  /// The color of the border.
+  /// The color of the
   final PdfColor color;
 
-  /// The width of the border.
+  /// The width of the
   final double width;
+
+  void paintBorders(Context context, PdfRect box) {
+    assert(box.x != null);
+    assert(box.y != null);
+    assert(box.w != null);
+    assert(box.h != null);
+
+    if (top || bottom || left || right) {
+      context.canvas
+        ..setColor(color)
+        ..setLineWidth(width);
+
+      if (top) {
+        context.canvas.drawLine(box.x, box.t, box.r, box.t);
+      }
+
+      if (right) {
+        if (!top) {
+          context.canvas.moveTo(box.r, box.t);
+        }
+        context.canvas.lineTo(box.r, box.y);
+      }
+
+      if (bottom) {
+        if (!right) {
+          context.canvas.moveTo(box.r, box.y);
+        }
+        context.canvas.lineTo(box.x, box.y);
+      }
+
+      if (left) {
+        if (!bottom) {
+          context.canvas.moveTo(box.x, box.y);
+        } else if (right && top) {
+          context.canvas.closePath();
+        } else
+          context.canvas.lineTo(box.x, box.t);
+      }
+
+      context.canvas.strokePath();
+    }
+  }
 }
 
 @immutable
@@ -63,47 +105,6 @@ class BoxDecoration {
         ..setColor(color)
         ..drawRect(box.x, box.y, box.w, box.h)
         ..fillPath();
-    }
-  }
-
-  void paintBorders(Context context, PdfRect box) {
-    assert(box.x != null);
-    assert(box.y != null);
-    assert(box.w != null);
-    assert(box.h != null);
-
-    if (border != null &&
-        (border.top || border.bottom || border.left || border.right)) {
-      context.canvas
-        ..setColor(border.color)
-        ..setLineWidth(border.width);
-
-      if (border.top) {
-        context.canvas.drawLine(box.x, box.t, box.r, box.t);
-      }
-
-      if (border.right) {
-        if (!border.top) {
-          context.canvas.moveTo(box.r, box.t);
-        }
-        context.canvas.lineTo(box.r, box.y);
-      }
-
-      if (border.bottom) {
-        if (!border.right) {
-          context.canvas.moveTo(box.r, box.y);
-        }
-        context.canvas.lineTo(box.x, box.y);
-      }
-
-      if (border.left) {
-        if (!border.bottom) {
-          context.canvas.moveTo(box.x, box.y);
-        }
-        context.canvas.lineTo(box.x, box.t);
-      }
-
-      context.canvas.strokePath();
     }
   }
 }
@@ -138,12 +139,12 @@ class DecoratedBox extends SingleChildWidget {
   void paint(Context context) {
     if (position == DecorationPosition.background) {
       decoration.paintBackground(context, box);
-      decoration.paintBorders(context, box);
+      decoration.border?.paintBorders(context, box);
     }
     super.paint(context);
     if (position == DecorationPosition.foreground) {
       decoration.paintBackground(context, box);
-      decoration.paintBorders(context, box);
+      decoration.border?.paintBorders(context, box);
     }
   }
 }

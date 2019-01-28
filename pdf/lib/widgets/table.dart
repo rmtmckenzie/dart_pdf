@@ -19,30 +19,85 @@ part of widget;
 /// A horizontal group of cells in a [Table].
 @immutable
 class TableRow {
-  const TableRow({this.decoration, this.children});
-
-  /// A decoration to paint behind this row.
-  final BoxDecoration decoration;
+  const TableRow({this.children});
 
   /// The widgets that comprise the cells in this row.
   final List<Widget> children;
 }
 
+enum TableCellVerticalAlignment { bottom, middle, top }
+
+enum TableWidth { min, max }
+
+class TableBorder extends BoxBorder {
+  const TableBorder(
+      {bool left = true,
+      bool top = true,
+      bool right = true,
+      bool bottom = true,
+      this.horizontalInside = true,
+      this.verticalInside = true,
+      PdfColor color = PdfColor.black,
+      double width = 1.0})
+      : super(
+            left: left,
+            top: top,
+            right: right,
+            bottom: bottom,
+            color: color,
+            width: width);
+
+  final bool horizontalInside;
+  final bool verticalInside;
+
+  @override
+  void paintBorders(Context context, PdfRect box,
+      [List<double> widths, List<double> heights]) {
+    super.paintBorders(context, box);
+
+    if (verticalInside) {
+      var offset = box.x;
+      for (var width in widths.sublist(0, widths.length - 1)) {
+        offset += width;
+        context.canvas.moveTo(offset, box.y);
+        context.canvas.lineTo(offset, box.t);
+      }
+      context.canvas.strokePath();
+    }
+
+    if (horizontalInside) {
+      var offset = box.t;
+      for (var height in heights.sublist(0, heights.length - 1)) {
+        offset -= height;
+        context.canvas.moveTo(box.x, offset);
+        context.canvas.lineTo(box.r, offset);
+      }
+      context.canvas.strokePath();
+    }
+  }
+}
+
 /// A widget that uses the table layout algorithm for its children.
 class Table extends Widget {
-  Table({
-    this.children = const <TableRow>[],
-    this.decoration,
-  })  : assert(children != null),
+  Table(
+      {this.children = const <TableRow>[],
+      this.border,
+      this.defaultVerticalAlignment = TableCellVerticalAlignment.top,
+      this.tableWidth = TableWidth.max})
+      : assert(children != null),
         super();
 
   /// The rows of the table.
   final List<TableRow> children;
 
-  /// The style to use when painting the boundary and interior divisions of the table.
-  final BoxDecoration decoration;
+  final TableBorder border;
 
-  final crossAxisAlignment = CrossAxisAlignment.stretch;
+  final TableCellVerticalAlignment defaultVerticalAlignment;
+
+  final TableWidth tableWidth;
+
+  final _widths = List<double>();
+  final _heights = List<double>();
 
   @override
   void layout(Context context, BoxConstraints constraints,
@@ -51,68 +106,68 @@ class Table extends Widget {
     //    Calculate required width for all row/columns
     //    Calculate width flex
     final flex = List<double>();
-    final widths = List<double>();
+    _widths.clear();
+    _heights.clear();
+
     for (var row in children) {
       var n = 0;
-      var width = 0.0;
       for (var child in row.children) {
         child.layout(context, BoxConstraints());
         final calculatedWidth =
             child.box.w == double.infinity ? 0.0 : child.box.w;
-        width += calculatedWidth;
         final childFlex = child._flex.toDouble();
         if (flex.length < n + 1) {
           flex.add(childFlex);
-          widths.add(calculatedWidth);
+          _widths.add(calculatedWidth);
         } else {
           if (childFlex > 0) {
             flex[n] *= childFlex;
           }
-          widths[n] = math.max(widths[n], calculatedWidth);
+          _widths[n] = math.max(_widths[n], calculatedWidth);
         }
         n++;
       }
     }
 
-    final maxWidth = widths.reduce((a, b) => a + b);
+    final maxWidth = _widths.reduce((a, b) => a + b);
 
-    print(flex);
-    print(widths);
-    print(maxWidth);
+    // print("flex: $flex");
+    // print("widths: $_widths");
+    // print("maxWidth: $maxWidth");
 
     // Second pass
     //    Calculate column widths using flex and estimated width
     if (constraints.hasBoundedWidth) {
+      final totalFlex = flex.reduce((a, b) => a + b);
       var flexSpace = 0.0;
-      for (var n = 0; n < widths.length; n++) {
+      for (var n = 0; n < _widths.length; n++) {
         if (flex[n] == 0.0) {
-          var newWidth = widths[n] / maxWidth * constraints.maxWidth;
-          if (newWidth < widths[n]) {
-            widths[n] = newWidth;
+          var newWidth = _widths[n] / maxWidth * constraints.maxWidth;
+          if ((tableWidth == TableWidth.max && totalFlex == 0.0) ||
+              newWidth < _widths[n]) {
+            _widths[n] = newWidth;
           }
-          flexSpace += widths[n];
+          flexSpace += _widths[n];
         }
       }
-      final totalFlex = flex.reduce((a, b) => a + b);
       final spacePerFlex = totalFlex > 0.0
           ? ((constraints.maxWidth - flexSpace) / totalFlex)
           : double.nan;
-      print(
-          "totalFlex:$totalFlex flexSpace:$flexSpace spacePerFlex:$spacePerFlex total:${constraints.maxWidth}");
+      // print(
+      // "totalFlex:$totalFlex flexSpace:$flexSpace spacePerFlex:$spacePerFlex total:${constraints.maxWidth}");
 
-      for (var n = 0; n < widths.length; n++) {
+      for (var n = 0; n < _widths.length; n++) {
         if (flex[n] > 0.0) {
           var newWidth = spacePerFlex * flex[n];
 
-          ;
-          print("n:$n newWidth:$newWidth flex:${flex[n]}");
-          widths[n] = newWidth;
+          // print("n:$n newWidth:$newWidth flex:${flex[n]}");
+          _widths[n] = newWidth;
         }
       }
     }
-    print(widths);
-    final totalWidth = widths.reduce((a, b) => a + b);
-    print("totalWidth:$totalWidth");
+    // print("widths: $_widths");
+    final totalWidth = _widths.reduce((a, b) => a + b);
+    // print("totalWidth:$totalWidth");
 
     // Third pass calculate final widths
     var totalHeight = 0.0;
@@ -122,15 +177,16 @@ class Table extends Widget {
 
       var lineHeight = 0.0;
       for (var child in row.children) {
-        final childConstraints = BoxConstraints.tightFor(width: widths[n]);
+        final childConstraints = BoxConstraints.tightFor(width: _widths[n]);
         child.layout(context, childConstraints);
         child.box = PdfRect(x, totalHeight, child.box.w, child.box.h);
-        x += widths[n];
+        x += _widths[n];
         lineHeight = math.max(lineHeight, child.box.h);
-        print(child.box);
+        // print("child.box: ${child.box}");
         n++;
       }
       totalHeight += lineHeight;
+      _heights.add(lineHeight);
     }
 
     // Fourth pass calculate final y position
@@ -142,16 +198,12 @@ class Table extends Widget {
     }
 
     box = PdfRect(0.0, 0.0, totalWidth, totalHeight);
-    print(box);
+    // print(box);
   }
 
   @override
   void paint(Context context) {
-    if (decoration != null) {
-      decoration.paintBackground(context, box);
-    } else {
-      super.paint(context);
-    }
+    super.paint(context);
 
     final mat = Matrix4.identity();
     mat.translate(box.x, box.y);
@@ -165,8 +217,32 @@ class Table extends Widget {
     }
     context.canvas.restoreContext();
 
-    if (decoration != null) {
-      decoration.paintBorders(context, box);
+    if (border != null) {
+      // print("widths: $_widths");
+      // print("heights: $_heights");
+      border.paintBorders(context, box, _widths, _heights);
     }
+  }
+
+  factory Table.fromTextArray(List<List<String>> data) {
+    final rows = List<TableRow>();
+    for (var row in data) {
+      final tableRow = List<Widget>();
+      if (row == data.first) {
+        for (var cell in row) {
+          tableRow.add(Container(
+              alignment: Alignment.center,
+              margin: EdgeInsets.all(5),
+              child: Text(cell)));
+        }
+      } else {
+        for (var cell in row) {
+          tableRow.add(Container(margin: EdgeInsets.all(5), child: Text(cell)));
+        }
+      }
+      rows.add(TableRow(children: tableRow));
+    }
+    return Table(
+        border: TableBorder(), tableWidth: TableWidth.max, children: rows);
   }
 }

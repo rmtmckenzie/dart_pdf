@@ -3,23 +3,6 @@ import 'dart:io';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 
-Widget tableTextArray(List<List<String>> data) {
-  final rows = List<TableRow>();
-  for (var row in data) {
-    final tableRow = List<Widget>();
-    for (var cell in row) {
-      tableRow.add(Container(
-        margin:EdgeInsets.all(5),
-        child:Text(cell)));
-    }
-    rows.add(TableRow(children: tableRow));
-  }
-  return Table(
-      decoration: BoxDecoration(
-          border: BoxBorder(top: true, left: true, right: true, bottom: true)),
-      children: rows);
-}
-
 void main() {
   // Document.debug = true;
 
@@ -134,7 +117,7 @@ void main() {
         Paragraph(
             text:
                 "The PDF file format has changed several times, and continues to evolve, along with the release of new versions of Adobe Acrobat. There have been nine versions of PDF and the corresponding version of the software:"),
-        tableTextArray([
+        Table.fromTextArray([
           ["Date", "PDF Version", "Acrobat Version"],
           ["1993", "PDF 1.0", "Acrobat 1"],
           ["1994", "PDF 1.1", "Acrobat 2"],

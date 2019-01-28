@@ -86,15 +86,7 @@ void main() {
         child: Align(
             alignment: Alignment.topCenter,
             child: Table(
-                decoration: BoxDecoration(
-                    border: BoxBorder(
-                        color: PdfColor.fromInt(0xffbada55),
-                        top: true,
-                        left: true,
-                        bottom: true,
-                        right: true,
-                        width: 1.0),
-                    color: PdfColor.fromInt(0xfff8ffe5)),
+                border: TableBorder(color: PdfColor.fromInt(0xffbada55)),
                 children: <TableRow>[
                   TableRow(children: <Widget>[
                     Expanded(
