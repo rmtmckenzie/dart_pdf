@@ -3,6 +3,23 @@ import 'dart:io';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 
+Widget tableTextArray(List<List<String>> data) {
+  final rows = List<TableRow>();
+  for (var row in data) {
+    final tableRow = List<Widget>();
+    for (var cell in row) {
+      tableRow.add(Container(
+        margin:EdgeInsets.all(5),
+        child:Text(cell)));
+    }
+    rows.add(TableRow(children: tableRow));
+  }
+  return Table(
+      decoration: BoxDecoration(
+          border: BoxBorder(top: true, left: true, right: true, bottom: true)),
+      children: rows);
+}
+
 void main() {
   // Document.debug = true;
 
@@ -113,6 +130,27 @@ void main() {
         Paragraph(
             text:
                 "Two PDF files that look similar on a computer screen may be of very different sizes. For example, a high resolution raster image takes more space than a low resolution one. Typically higher resolution is needed for printing documents than for displaying them on screen. Other things that may increase the size of a file is embedding full fonts, especially for Asiatic scripts, and storing text as graphics. "),
+        Header(level: 1, text: "File formats and Adobe Acrobat versions"),
+        Paragraph(
+            text:
+                "The PDF file format has changed several times, and continues to evolve, along with the release of new versions of Adobe Acrobat. There have been nine versions of PDF and the corresponding version of the software:"),
+        tableTextArray([
+          ["Date", "PDF Version", "Acrobat Version"],
+          ["1993", "PDF 1.0", "Acrobat 1"],
+          ["1994", "PDF 1.1", "Acrobat 2"],
+          ["1996", "PDF 1.2", "Acrobat 3"],
+          ["1999", "PDF 1.3", "Acrobat 4"],
+          ["2001", "PDF 1.4", "Acrobat 5"],
+          ["2003", "PDF 1.5", "Acrobat 6"],
+          ["2005", "PDF 1.6", "Acrobat 7"],
+          ["2006", "PDF 1.7", "Acrobat 8"],
+          ["2008", "PDF 1.7", "Acrobat 9"],
+          ["2009", "PDF 1.7", "Acrobat 9.1"],
+          ["2010", "PDF 1.7", "Acrobat X"],
+          ["2012", "PDF 1.7", "Acrobat XI"],
+          ["2017", "PDF 2.0", "Acrobat DC"],
+        ]),
+        Padding(padding: EdgeInsets.all(10)),
         Paragraph(
             text:
                 "Text is available under the Creative Commons Attribution Share Alike License.")
