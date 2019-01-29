@@ -22,7 +22,7 @@ abstract class BasePage {
   BasePage({this.pageFormat}) : assert(pageFormat != null);
 
   @protected
-  void build(Document document);
+  void generate(Document document);
 }
 
 class Document {
@@ -30,35 +30,36 @@ class Document {
 
   final PdfDocument document;
 
-  TextStyle _defaultTextStyle;
+  final Theme theme;
 
-  TextStyle get defaultTextStyle {
-    if (_defaultTextStyle == null) {
-      _defaultTextStyle =
-          TextStyle(color: PdfColor.black, font: PdfFont.helvetica(document));
-    }
-    return _defaultTextStyle;
-  }
-
-  Document({PdfPageMode pageMode = PdfPageMode.none, DeflateCallback deflate})
+  Document(
+      {PdfPageMode pageMode = PdfPageMode.none,
+      DeflateCallback deflate,
+      this.theme})
       : document = PdfDocument(pageMode: pageMode, deflate: deflate);
 
   void addPage(BasePage page) {
-    page.build(this);
+    page.generate(this);
   }
 }
 
+typedef Widget BuildCallback(Context context);
+typedef List<Widget> BuildListCallback(Context context);
+
 class Page extends BasePage {
   final EdgeInsets margin;
-  final Widget child;
+  final BuildCallback _build;
+  final Theme theme;
 
   Page(
       {PdfPageFormat pageFormat = PdfPageFormat.a4,
-      this.child,
+      BuildCallback build,
+      this.theme,
       EdgeInsets margin})
       : margin = margin ??
             EdgeInsets.fromLTRB(pageFormat.marginLeft, pageFormat.marginTop,
                 pageFormat.marginRight, pageFormat.marginBottom),
+        _build = build,
         super(pageFormat: pageFormat);
 
   void debugPaint(Context context) {
@@ -76,18 +77,25 @@ class Page extends BasePage {
   }
 
   @override
-  void build(Document document) {
+  void generate(Document document) {
     final pdfPage = PdfPage(document.document, pageFormat: pageFormat);
     final canvas = pdfPage.getGraphics();
     final constraints = BoxConstraints(
         maxWidth: pageFormat.width, maxHeight: pageFormat.height);
 
-    final context = Context(pdfPage, document.defaultTextStyle, canvas);
-    _layout(context, constraints);
-    _paint(context);
+    final calculatedTheme = theme ?? document.theme ?? Theme(document.document);
+    final inherited = Map<Type, Inherited>();
+    inherited[calculatedTheme.runtimeType] = calculatedTheme;
+    final context =
+        Context(page: pdfPage, canvas: canvas, inherited: inherited);
+    if (_build != null) {
+      final child = _build(context);
+      _layout(child, context, constraints);
+      _paint(child, context);
+    }
   }
 
-  void _layout(Context context, BoxConstraints constraints,
+  void _layout(Widget child, Context context, BoxConstraints constraints,
       {parentUsesSize = false}) {
     if (child != null) {
       final childConstraints = BoxConstraints(
@@ -108,7 +116,7 @@ class Page extends BasePage {
     }
   }
 
-  void _paint(Context context) {
+  void _paint(Widget child, Context context) {
     if (Document.debug) debugPaint(context);
 
     if (child != null) {
@@ -117,33 +125,38 @@ class Page extends BasePage {
   }
 }
 
-typedef Widget BuildCallback(Context context);
-
 class MultiPage extends Page {
-  final List<Widget> children;
+  final BuildListCallback _buildList;
   final CrossAxisAlignment crossAxisAlignment;
   final BuildCallback header;
   final BuildCallback footer;
 
   MultiPage(
       {PdfPageFormat pageFormat = PdfPageFormat.a4,
-      this.children,
+      BuildListCallback build,
       this.crossAxisAlignment = CrossAxisAlignment.start,
       this.header,
       this.footer,
       EdgeInsets margin})
-      : super(pageFormat: pageFormat, margin: margin);
+      : _buildList = build,
+        super(pageFormat: pageFormat, margin: margin);
 
   @override
-  void build(Document document) {
+  void generate(Document document) {
+    if (_buildList == null) return;
+
     final constraints = BoxConstraints(
         maxWidth: pageFormat.width, maxHeight: pageFormat.height);
     final childConstraints =
         BoxConstraints(maxWidth: constraints.maxWidth - margin.horizontal);
+    final calculatedTheme = theme ?? document.theme ?? Theme(document.document);
+    final inherited = Map<Type, Inherited>();
+    inherited[calculatedTheme.runtimeType] = calculatedTheme;
     Context context;
     double offsetEnd;
     double offsetStart;
     var index = 0;
+    final children = _buildList(Context(inherited: inherited));
 
     while (index < children.length) {
       final child = children[index];
@@ -151,7 +164,7 @@ class MultiPage extends Page {
       if (context == null) {
         final pdfPage = PdfPage(document.document, pageFormat: pageFormat);
         final canvas = pdfPage.getGraphics();
-        context = Context(pdfPage, document.defaultTextStyle, canvas);
+        context = Context(page: pdfPage, canvas: canvas, inherited: inherited);
         if (Document.debug) debugPaint(context);
         offsetStart = pageFormat.height - margin.top;
         offsetEnd = margin.bottom;

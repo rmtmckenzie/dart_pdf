@@ -18,14 +18,31 @@ part of widget;
 
 @immutable
 class Context {
-  final TextStyle textStyle;
   final PdfPage page;
   final PdfGraphics canvas;
 
+  final Map<Type, Inherited> inherited;
+
   get pageNumber => page.pdfDocument.pdfPageList.pages.indexOf(page) + 1;
 
-  const Context(this.page, this.textStyle, this.canvas);
+  const Context({this.page, this.canvas, this.inherited});
+
+  Context copyWith(
+      {PdfPage page, PdfGraphics canvas, Map<Type, Inherited> inherited}) {
+    return Context(
+        page: page ?? this.page,
+        canvas: canvas ?? this.canvas,
+        inherited: inherited ?? this.inherited);
+  }
+
+  Context inheritFrom(Inherited object) {
+    final inherited = this.inherited;
+    inherited[object.runtimeType] = object;
+    return copyWith(inherited: inherited);
+  }
 }
+
+class Inherited {}
 
 abstract class Widget {
   PdfRect box;

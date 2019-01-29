@@ -224,7 +224,8 @@ class Table extends Widget {
     }
   }
 
-  factory Table.fromTextArray(List<List<String>> data) {
+  factory Table.fromTextArray(
+      {@required Context context, @required List<List<String>> data}) {
     final rows = List<TableRow>();
     for (var row in data) {
       final tableRow = List<Widget>();
@@ -233,11 +234,13 @@ class Table extends Widget {
           tableRow.add(Container(
               alignment: Alignment.center,
               margin: EdgeInsets.all(5),
-              child: Text(cell)));
+              child: Text(cell, style: Theme.of(context).tableHeader)));
         }
       } else {
         for (var cell in row) {
-          tableRow.add(Container(margin: EdgeInsets.all(5), child: Text(cell)));
+          tableRow.add(Container(
+              margin: EdgeInsets.all(5),
+              child: Text(cell, style: Theme.of(context).tableCell)));
         }
       }
       rows.add(TableRow(children: tableRow));

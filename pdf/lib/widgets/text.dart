@@ -19,7 +19,7 @@ part of widget;
 @immutable
 class TextStyle {
   const TextStyle({
-    this.color,
+    this.color = PdfColor.black,
     this.font,
     this.fontSize = _defaultFontSize,
     this.letterSpacing = 1.0,
@@ -143,7 +143,7 @@ class Text extends Widget {
     _words.clear();
 
     if (style == null) {
-      style = context.textStyle;
+      style = Theme.of(context).defaultTextStyle;
     }
 
     final cw = constraints.hasBoundedWidth

@@ -88,7 +88,7 @@ class Paragraph extends StatelessWidget {
       child: Text(
         text,
         textAlign: TextAlign.justify,
-        style: context.textStyle.copyWith(lineSpacing: 5.0),
+        style: Theme.of(context).paragraphStyle,
       ),
     );
   }
@@ -115,9 +115,7 @@ class Bullet extends StatelessWidget {
                 child: Shape(shape,
                     fillColor: PdfColor.black, width: 10.0, height: 10.0),
               ),
-              Expanded(
-                  child: Text(text,
-                      style: context.textStyle.copyWith(lineSpacing: 5.0)))
+              Expanded(child: Text(text, style: Theme.of(context).bulletStyle))
             ]));
   }
 }
