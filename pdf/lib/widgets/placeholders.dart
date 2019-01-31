@@ -73,28 +73,18 @@ class PdfLogo extends StatelessWidget {
 
 final FlutterLogo = PdfLogo;
 
-class Lorem extends StatelessWidget {
+class LoremText {
+  LoremText({math.Random random}) : random = random ?? math.Random(978);
+
+  final math.Random random;
+
   static final words =
       "ad adipiscing aliqua aliquip amet anim aute cillum commodo consectetur consequat culpa cupidatat deserunt do dolor dolore duis ea eiusmod elit enim esse est et eu ex excepteur exercitation fugiat id in incididunt ipsum irure labore laboris laborum lorem magna minim mollit nisi non nostrud nulla occaecat officia pariatur proident qui quis reprehenderit sed sint sit sunt tempor ullamco ut velit veniam voluptate"
           .split(" ");
 
-  final int length;
-  final math.Random random;
-  final TextStyle style;
-  final TextAlign textAlign;
-  final bool softWrap;
-  final double textScaleFactor;
-  final int maxLines;
-
-  Lorem(
-      {this.length = 50,
-      math.Random random,
-      this.style,
-      this.textAlign = TextAlign.left,
-      this.softWrap = true,
-      this.textScaleFactor = 1.0,
-      this.maxLines})
-      : random = random ?? math.Random(978);
+  String word() {
+    return words[random.nextInt(words.length - 1)];
+  }
 
   String sentence(int length) {
     final wordList = List<String>();
@@ -114,21 +104,37 @@ class Lorem extends StatelessWidget {
     while (wordsCount < length) {
       n++;
       if (n > 100) break;
-      var count =
-          math.max(10, math.min(3, random.nextInt(length - wordsCount)));
+      var count = math.min(length,
+          math.max(10, math.min(3, random.nextInt(length - wordsCount))));
       sentenseList.add(sentence(count));
       wordsCount += count;
     }
     return sentenseList.join(" ");
   }
+}
 
-  String word() {
-    return words[random.nextInt(words.length - 1)];
-  }
+class Lorem extends StatelessWidget {
+  Lorem(
+      {this.length = 50,
+      this.random,
+      this.style,
+      this.textAlign = TextAlign.left,
+      this.softWrap = true,
+      this.textScaleFactor = 1.0,
+      this.maxLines});
+
+  final int length;
+  final math.Random random;
+  final TextStyle style;
+  final TextAlign textAlign;
+  final bool softWrap;
+  final double textScaleFactor;
+  final int maxLines;
 
   @override
   Widget build(Context context) {
-    final text = paragraph(length);
+    final lorem = LoremText(random: random);
+    final text = lorem.paragraph(length);
 
     return Text(text,
         style: style,
