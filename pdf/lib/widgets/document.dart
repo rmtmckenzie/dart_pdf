@@ -157,6 +157,7 @@ class MultiPage extends Page {
     double offsetStart;
     var index = 0;
     final children = _buildList(Context(inherited: inherited));
+    WidgetContext widgetContext;
 
     while (index < children.length) {
       final child = children[index];
@@ -196,9 +197,38 @@ class MultiPage extends Page {
         }
       }
 
+      if (widgetContext != null && child is SpanningWidget) {
+        (child as SpanningWidget).restoreContext(widgetContext);
+        widgetContext = null;
+      }
+
       child.layout(context, childConstraints, parentUsesSize: false);
 
       if (offsetStart - child.box.h < offsetEnd) {
+        if (child.box.h < pageFormat.height - margin.vertical) {
+          context = null;
+          continue;
+        }
+
+        if (!(child is SpanningWidget)) {
+          throw Exception("Widget won't fit into the page");
+        }
+
+        final span = child as SpanningWidget;
+
+        child.layout(context,
+            childConstraints.copyWith(maxHeight: offsetStart - offsetEnd),
+            parentUsesSize: false);
+        child.box = PdfRect(
+            margin.left, offsetStart - child.box.h, child.box.w, child.box.h);
+        child.paint(context);
+
+        if (span.canSpan) {
+          widgetContext = span.saveContext();
+        } else {
+          index++;
+        }
+
         context = null;
         continue;
       }

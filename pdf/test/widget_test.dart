@@ -77,20 +77,27 @@ void main() {
                       textScaleFactor: 3.0)),
             ])));
 
-    pdf.addPage(Page(
+    pdf.addPage(MultiPage(
         pageFormat: PdfPageFormat(400.0, 200.0),
         margin: EdgeInsets.all(10.0),
-        build: (Context context) => Align(
-            alignment: Alignment.topCenter,
-            child: Table.fromTextArray(context: context, data: [
-              ["Company", "Contact", "Country"],
-              ["Alfreds Futterkiste", "Maria Anders", "Germany"],
-              ["Centro comercial Moctezuma", "Francisco Chang", "Mexico"],
-              ["Ernst Handel", "Roland Mendel", "Austria"],
-              ["Island Trading", "Helen Bennett", "UK"],
-              ["Laughing Bacchus Winecellars", "Yoshi Tannamuri", "Canada"],
-              ["Magazzini Alimentari Riuniti", "Giovanni Rovelli", "Italy"],
-            ]))));
+        build: (Context context) => <Widget>[
+              Table.fromTextArray(context: context, data: [
+                ["Company", "Contact", "Country"],
+                ["Alfreds Futterkiste", "Maria Anders", "Germany"],
+                ["Centro comercial Moctezuma", "Francisco Chang", "Mexico"],
+                ["Ernst Handel", "Roland Mendel", "Austria"],
+                ["Island Trading", "Helen Bennett", "UK"],
+                ["Laughing Bacchus Winecellars", "Yoshi Tannamuri", "Canada"],
+                ["Magazzini Alimentari Riuniti", "Giovanni Rovelli", "Italy"],
+                ["Spaceage Stereo", "Igor Cavalcanti Pereira", "Brasil"],
+                ["Team Uno", "Frantisek Stefánek", "Czech Republic"],
+                ["Isaly's", "Michelle J. Kristensen", "Danmark"],
+                ["Albers", "Marjolaine Laramée", "France"],
+                ["Dynatronics Accessories", "Cong Ch'en", "China"],
+                ["York Steak House", "Outi Vuorinen", "Finland"],
+                ["Weathervane", "Else Jeremiassen", "Iceland"],
+              ])
+            ]));
 
     var file = File('widgets.pdf');
     file.writeAsBytesSync(pdf.document.save());

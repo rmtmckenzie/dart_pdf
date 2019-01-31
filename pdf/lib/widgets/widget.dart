@@ -46,7 +46,7 @@ class Inherited {}
 
 abstract class Widget {
   PdfRect box;
-  int _flex = 0;
+  var _flex = 0;
   FlexFit _fit = FlexFit.loose;
 
   Widget();
@@ -70,6 +70,18 @@ abstract class Widget {
       ..drawRect(box.x, box.y, box.w, box.h)
       ..strokePath();
   }
+}
+
+class WidgetContext {}
+
+abstract class SpanningWidget {
+  bool get canSpan => false;
+
+  @protected
+  WidgetContext saveContext();
+
+  @protected
+  void restoreContext(WidgetContext context);
 }
 
 abstract class StatelessWidget extends Widget {

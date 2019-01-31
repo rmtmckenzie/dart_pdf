@@ -19,10 +19,13 @@ part of widget;
 /// A horizontal group of cells in a [Table].
 @immutable
 class TableRow {
-  const TableRow({this.children});
+  const TableRow({this.children, this.repeat = false});
 
   /// The widgets that comprise the cells in this row.
   final List<Widget> children;
+
+  /// Repeat this row on all pages
+  final bool repeat;
 }
 
 enum TableCellVerticalAlignment { bottom, middle, top }
@@ -77,8 +80,13 @@ class TableBorder extends BoxBorder {
   }
 }
 
+class _TableContext extends WidgetContext {
+  var firstLine = 0;
+  var lastLine = 0;
+}
+
 /// A widget that uses the table layout algorithm for its children.
-class Table extends Widget {
+class Table extends Widget implements SpanningWidget {
   Table(
       {this.children = const <TableRow>[],
       this.border,
@@ -86,6 +94,9 @@ class Table extends Widget {
       this.tableWidth = TableWidth.max})
       : assert(children != null),
         super();
+
+  @override
+  bool get canSpan => true;
 
   /// The rows of the table.
   final List<TableRow> children;
@@ -99,15 +110,27 @@ class Table extends Widget {
   final _widths = List<double>();
   final _heights = List<double>();
 
+  var _context = _TableContext();
+
+  @override
+  WidgetContext saveContext() {
+    return _context;
+  }
+
+  @override
+  void restoreContext(WidgetContext context) {
+    _context = context;
+    _context.firstLine = _context.lastLine;
+  }
+
   @override
   void layout(Context context, BoxConstraints constraints,
       {parentUsesSize = false}) {
-    // First pass
-    //    Calculate required width for all row/columns
-    //    Calculate width flex
+    // Compute required width for all row/columns width flex
     final flex = List<double>();
     _widths.clear();
     _heights.clear();
+    var index = 0;
 
     for (var row in children) {
       var n = 0;
@@ -131,12 +154,7 @@ class Table extends Widget {
 
     final maxWidth = _widths.reduce((a, b) => a + b);
 
-    // print("flex: $flex");
-    // print("widths: $_widths");
-    // print("maxWidth: $maxWidth");
-
-    // Second pass
-    //    Calculate column widths using flex and estimated width
+    // Compute column widths using flex and estimated width
     if (constraints.hasBoundedWidth) {
       final totalFlex = flex.reduce((a, b) => a + b);
       var flexSpace = 0.0;
@@ -153,25 +171,23 @@ class Table extends Widget {
       final spacePerFlex = totalFlex > 0.0
           ? ((constraints.maxWidth - flexSpace) / totalFlex)
           : double.nan;
-      // print(
-      // "totalFlex:$totalFlex flexSpace:$flexSpace spacePerFlex:$spacePerFlex total:${constraints.maxWidth}");
 
       for (var n = 0; n < _widths.length; n++) {
         if (flex[n] > 0.0) {
           var newWidth = spacePerFlex * flex[n];
-
-          // print("n:$n newWidth:$newWidth flex:${flex[n]}");
           _widths[n] = newWidth;
         }
       }
     }
-    // print("widths: $_widths");
-    final totalWidth = _widths.reduce((a, b) => a + b);
-    // print("totalWidth:$totalWidth");
 
-    // Third pass calculate final widths
+    final totalWidth = _widths.reduce((a, b) => a + b);
+
+    // Compute final widths
     var totalHeight = 0.0;
+    index = 0;
     for (var row in children) {
+      if (index++ < _context.firstLine && !row.repeat) continue;
+
       var n = 0;
       var x = 0.0;
 
@@ -182,23 +198,32 @@ class Table extends Widget {
         child.box = PdfRect(x, totalHeight, child.box.w, child.box.h);
         x += _widths[n];
         lineHeight = math.max(lineHeight, child.box.h);
-        // print("child.box: ${child.box}");
         n++;
+      }
+
+      if (totalHeight + lineHeight > constraints.maxHeight) {
+        index--;
+        break;
       }
       totalHeight += lineHeight;
       _heights.add(lineHeight);
     }
+    _context.lastLine = index;
 
-    // Fourth pass calculate final y position
+    // Compute final y position
+    index = 0;
     for (var row in children) {
+      if (index++ < _context.firstLine && !row.repeat) continue;
+
       for (var child in row.children) {
         child.box = PdfRect(child.box.x,
             totalHeight - child.box.y - child.box.h, child.box.w, child.box.h);
       }
+
+      if (index >= _context.lastLine) break;
     }
 
     box = PdfRect(0.0, 0.0, totalWidth, totalHeight);
-    // print(box);
   }
 
   @override
@@ -210,16 +235,18 @@ class Table extends Widget {
     context.canvas
       ..saveContext()
       ..setTransform(mat);
+
+    var index = 0;
     for (var row in children) {
+      if (index++ < _context.firstLine && !row.repeat) continue;
       for (var child in row.children) {
         child.paint(context);
       }
+      if (index >= _context.lastLine) break;
     }
     context.canvas.restoreContext();
 
     if (border != null) {
-      // print("widths: $_widths");
-      // print("heights: $_heights");
       border.paintBorders(context, box, _widths, _heights);
     }
   }
@@ -243,7 +270,7 @@ class Table extends Widget {
               child: Text(cell, style: Theme.of(context).tableCell)));
         }
       }
-      rows.add(TableRow(children: tableRow));
+      rows.add(TableRow(children: tableRow, repeat: row == data.first));
     }
     return Table(
         border: TableBorder(), tableWidth: TableWidth.max, children: rows);
