@@ -92,7 +92,8 @@ void main() {
                 crossAxisSpacing: 10.0,
                 mainAxisSpacing: 10.0,
                 padding: EdgeInsets.all(10.0),
-                children: List<Widget>.generate(9, (n) => PdfLogo())))));
+                children: List<Widget>.generate(
+                    9, (n) => FittedBox(child: Text("${n + 1}")))))));
 
     pdf.addPage(MultiPage(
         pageFormat: PdfPageFormat(400.0, 200.0),
