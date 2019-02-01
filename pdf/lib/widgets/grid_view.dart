@@ -35,6 +35,12 @@ class GridView extends MultiChildWidget {
   final double crossAxisSpacing;
   final double childAspectRatio;
 
+  double _childCrossAxis;
+  double _childMainAxis;
+  double _totalMain;
+  double _totalCross;
+  int _mainAxisCount;
+
   @override
   void layout(Context context, BoxConstraints constraints,
       {parentUsesSize = false}) {
@@ -51,17 +57,17 @@ class GridView extends MultiChildWidget {
         break;
     }
 
-    final mainAxisCount = (children.length / crossAxisCount).ceil();
-    final childCrossAxis = crossAxisExtent / crossAxisCount -
+    _mainAxisCount = (children.length / crossAxisCount).ceil();
+    _childCrossAxis = crossAxisExtent / crossAxisCount -
         (crossAxisSpacing * (crossAxisCount - 1) / crossAxisCount);
-    final childMainAxis = math.min(
-        childCrossAxis * childAspectRatio,
-        mainAxisExtent / mainAxisCount -
-            (mainAxisSpacing * (mainAxisCount - 1) / mainAxisCount));
-    final totalMain =
-        (childMainAxis + mainAxisSpacing) * mainAxisCount - mainAxisSpacing;
-    final totalCross =
-        (childCrossAxis + crossAxisSpacing) * crossAxisCount - crossAxisSpacing;
+    _childMainAxis = math.min(
+        _childCrossAxis * childAspectRatio,
+        mainAxisExtent / _mainAxisCount -
+            (mainAxisSpacing * (_mainAxisCount - 1) / _mainAxisCount));
+    _totalMain =
+        (_childMainAxis + mainAxisSpacing) * _mainAxisCount - mainAxisSpacing;
+    _totalCross = (_childCrossAxis + crossAxisSpacing) * crossAxisCount -
+        crossAxisSpacing;
 
     var startX = padding.left;
     var startY = 0.0;
@@ -71,13 +77,13 @@ class GridView extends MultiChildWidget {
     switch (direction) {
       case Axis.vertical:
         innerConstraints = BoxConstraints.tightFor(
-            width: childCrossAxis, height: childMainAxis);
+            width: _childCrossAxis, height: _childMainAxis);
         crossAxis = startX;
         mainAxis = startY;
         break;
       case Axis.horizontal:
         innerConstraints = BoxConstraints.tightFor(
-            width: childMainAxis, height: childCrossAxis);
+            width: _childMainAxis, height: _childCrossAxis);
         mainAxis = startX;
         crossAxis = startY;
         break;
@@ -91,10 +97,10 @@ class GridView extends MultiChildWidget {
         case Axis.vertical:
           child.box = PdfRect.fromPoints(
               PdfPoint(
-                  (childCrossAxis - child.box.w) / 2.0 + crossAxis,
-                  totalMain +
+                  (_childCrossAxis - child.box.w) / 2.0 + crossAxis,
+                  _totalMain +
                       padding.bottom -
-                      (childMainAxis - child.box.h) / 2.0 -
+                      (_childMainAxis - child.box.h) / 2.0 -
                       mainAxis -
                       child.box.h),
               child.box.size);
@@ -102,10 +108,10 @@ class GridView extends MultiChildWidget {
         case Axis.horizontal:
           child.box = PdfRect.fromPoints(
               PdfPoint(
-                  (childMainAxis - child.box.w) / 2.0 + mainAxis,
-                  totalCross +
+                  (_childMainAxis - child.box.w) / 2.0 + mainAxis,
+                  _totalCross +
                       padding.bottom -
-                      (childCrossAxis - child.box.h) / 2.0 -
+                      (_childCrossAxis - child.box.h) / 2.0 -
                       crossAxis -
                       child.box.h),
               child.box.size);
@@ -113,41 +119,81 @@ class GridView extends MultiChildWidget {
       }
 
       if (++c >= crossAxisCount) {
-        mainAxis += childMainAxis + mainAxisSpacing;
+        mainAxis += _childMainAxis + mainAxisSpacing;
         crossAxis = startX;
         c = 0;
       } else {
-        crossAxis += childCrossAxis + crossAxisSpacing;
+        crossAxis += _childCrossAxis + crossAxisSpacing;
       }
     }
 
     switch (direction) {
       case Axis.vertical:
         box = constraints.constrainRect(
-            width: totalCross + padding.horizontal,
-            height: totalMain + padding.vertical);
+            width: _totalCross + padding.horizontal,
+            height: _totalMain + padding.vertical);
         break;
       case Axis.horizontal:
         box = constraints.constrainRect(
-            width: totalMain + padding.horizontal,
-            height: totalCross + padding.vertical);
+            width: _totalMain + padding.horizontal,
+            height: _totalCross + padding.vertical);
         break;
     }
   }
 
   @override
   void debugPaint(Context context) {
+    super.debugPaint(context);
+
     context.canvas
       ..setColor(PdfColor.lime)
-      ..moveTo(box.x, box.y)
-      ..lineTo(box.r, box.y)
+      ..moveTo(box.l, box.b)
+      ..lineTo(box.r, box.b)
       ..lineTo(box.r, box.t)
-      ..lineTo(box.x, box.t)
-      ..moveTo(box.x + padding.left, box.y + padding.bottom)
-      ..lineTo(box.x + padding.left, box.t - padding.top)
+      ..lineTo(box.l, box.t)
+      ..moveTo(box.l + padding.left, box.b + padding.bottom)
+      ..lineTo(box.l + padding.left, box.t - padding.top)
       ..lineTo(box.r - padding.right, box.t - padding.top)
-      ..lineTo(box.r - padding.right, box.y + padding.bottom)
+      ..lineTo(box.r - padding.right, box.b + padding.bottom)
       ..fillPath();
+
+    for (var c = 1; c < crossAxisCount; c++) {
+      switch (direction) {
+        case Axis.vertical:
+          context.canvas
+            ..drawRect(
+                box.l +
+                    padding.left +
+                    (_childCrossAxis + crossAxisSpacing) * c -
+                    crossAxisSpacing,
+                box.b + padding.bottom,
+                math.max(crossAxisSpacing, 1.0),
+                box.h - padding.vertical)
+            ..fillPath();
+          break;
+        case Axis.horizontal:
+          break;
+      }
+    }
+
+    for (var c = 1; c < _mainAxisCount; c++) {
+      switch (direction) {
+        case Axis.vertical:
+          context.canvas
+            ..drawRect(
+                box.l + padding.left,
+                box.b +
+                    padding.bottom +
+                    (_childMainAxis + mainAxisSpacing) * c -
+                    mainAxisSpacing,
+                box.w - padding.horizontal,
+                math.max(mainAxisSpacing, 1.0))
+            ..fillPath();
+          break;
+        case Axis.horizontal:
+          break;
+      }
+    }
   }
 
   @override

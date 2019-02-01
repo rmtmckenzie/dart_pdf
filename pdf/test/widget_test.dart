@@ -92,7 +92,7 @@ void main() {
                 crossAxisSpacing: 10.0,
                 mainAxisSpacing: 10.0,
                 padding: EdgeInsets.all(10.0),
-                children: List<Widget>.generate(9, (n) => Text("${n + 1}"))))));
+                children: List<Widget>.generate(9, (n) => PdfLogo())))));
 
     pdf.addPage(MultiPage(
         pageFormat: PdfPageFormat(400.0, 200.0),
