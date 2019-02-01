@@ -19,8 +19,9 @@ part of widget;
 class Image extends Widget {
   final PdfImage image;
   final double aspectRatio;
+  final BoxFit fit;
 
-  Image(this.image)
+  Image(this.image, {this.fit = BoxFit.contain})
       : aspectRatio = (image.height.toDouble() / image.width.toDouble());
 
   @override
@@ -33,11 +34,11 @@ class Image extends Widget {
         ? constraints.maxHeight
         : constraints.constrainHeight(image.height.toDouble());
 
-    if (aspectRatio >= 1.0) {
-      box = PdfRect.fromPoints(PdfPoint.zero, PdfPoint(h / aspectRatio, h));
-    } else {
-      box = PdfRect.fromPoints(PdfPoint.zero, PdfPoint(w, w / aspectRatio));
-    }
+    final FittedSizes sizes = applyBoxFit(
+        fit,
+        PdfPoint(image.width.toDouble(), image.height.toDouble()),
+        PdfPoint(w, h));
+    box = PdfRect.fromPoints(PdfPoint.zero, sizes.destination);
   }
 
   @override
@@ -55,10 +56,16 @@ class Shape extends Widget {
   final double width;
   final double height;
   final double aspectRatio;
+  final BoxFit fit;
 
-  Shape(this.shape,
-      {this.strokeColor, this.fillColor, this.width = 1.0, this.height = 1.0})
-      : assert(width != null && width > 0.0),
+  Shape(
+    this.shape, {
+    this.strokeColor,
+    this.fillColor,
+    this.width = 1.0,
+    this.height = 1.0,
+    this.fit = BoxFit.contain,
+  })  : assert(width != null && width > 0.0),
         assert(height != null && height > 0.0),
         aspectRatio = height / width;
 
@@ -72,11 +79,9 @@ class Shape extends Widget {
         ? constraints.maxHeight
         : constraints.constrainHeight(height);
 
-    if (aspectRatio >= 1.0) {
-      box = PdfRect.fromPoints(PdfPoint.zero, PdfPoint(h / aspectRatio, h));
-    } else {
-      box = PdfRect.fromPoints(PdfPoint.zero, PdfPoint(w, w / aspectRatio));
-    }
+    final FittedSizes sizes =
+        applyBoxFit(fit, PdfPoint(width, height), PdfPoint(w, h));
+    box = PdfRect.fromPoints(PdfPoint.zero, sizes.destination);
   }
 
   @override
