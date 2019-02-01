@@ -14,26 +14,12 @@
  * limitations under the License.
  */
 
-library widget;
+part of widget;
 
-import 'dart:math' as math;
-
-import 'package:meta/meta.dart';
-import 'package:pdf/pdf.dart';
-import 'package:vector_math/vector_math_64.dart';
-
-part 'widgets/basic.dart';
-part 'widgets/clip.dart';
-part 'widgets/container.dart';
-part 'widgets/content.dart';
-part 'widgets/document.dart';
-part 'widgets/flex.dart';
-part 'widgets/geometry.dart';
-part 'widgets/grid_view.dart';
-part 'widgets/image.dart';
-part 'widgets/placeholders.dart';
-part 'widgets/stack.dart';
-part 'widgets/table.dart';
-part 'widgets/text.dart';
-part 'widgets/theme.dart';
-part 'widgets/widget.dart';
+class Stack extends MultiChildWidget {
+  @override
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
+    // TODO: implement layout
+  }
+}
