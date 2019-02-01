@@ -25,7 +25,7 @@ void main() {
   test('Pdf', () {
     Document.debug = true;
 
-    var pdf = Document(deflate: zlib.encode);
+    var pdf = Document();
 
     final symbol = TextStyle(font: PdfFont.zapfDingbats(pdf.document));
 

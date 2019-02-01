@@ -4,8 +4,6 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 
 void main() {
-  // Document.debug = true;
-
   final pdf = Document(deflate: zlib.encode);
 
   pdf.addPage(MultiPage(
