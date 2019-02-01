@@ -341,3 +341,108 @@ class FittedBox extends SingleChildWidget {
     }
   }
 }
+
+typedef CustomPainter(PdfGraphics canvas, PdfPoint size);
+
+class CustomPaint extends SingleChildWidget {
+  CustomPaint(
+      {this.painter,
+      this.foregroundPainter,
+      this.size = PdfPoint.zero,
+      Widget child})
+      : super(child: child);
+
+  final CustomPainter painter;
+  final CustomPainter foregroundPainter;
+  final PdfPoint size;
+
+  @override
+  void paint(Context context) {
+    assert(() {
+      if (Document.debug) debugPaint(context);
+      return true;
+    }());
+
+    if (child != null) {
+      final mat = Matrix4.identity();
+      mat.translate(box.x, box.y);
+      context.canvas
+        ..saveContext()
+        ..setTransform(mat);
+      painter(context.canvas, box.size);
+      child.paint(context);
+      foregroundPainter(context.canvas, box.size);
+      context.canvas.restoreContext();
+    }
+  }
+}
+
+class ClipRect extends SingleChildWidget {
+  ClipRect({Widget child}) : super(child: child);
+
+  @protected
+  void debugPaint(Context context) {
+    context.canvas
+      ..setColor(PdfColor.deepPurple)
+      ..drawRect(box.x, box.y, box.w, box.h)
+      ..strokePath();
+  }
+
+  @override
+  void paint(Context context) {
+    assert(() {
+      if (Document.debug) debugPaint(context);
+      return true;
+    }());
+
+    if (child != null) {
+      final mat = Matrix4.identity();
+      mat.translate(box.x, box.y);
+      context.canvas
+        ..saveContext()
+        ..drawRect(box.x, box.y, box.w, box.h)
+        ..clipPath()
+        ..setTransform(mat);
+      child.paint(context);
+      context.canvas.restoreContext();
+    }
+  }
+}
+
+class ClipOval extends SingleChildWidget {
+  ClipOval({Widget child}) : super(child: child);
+
+  @protected
+  void debugPaint(Context context) {
+    final rx = box.w / 2.0;
+    final ry = box.h / 2.0;
+
+    context.canvas
+      ..setColor(PdfColor.deepPurple)
+      ..drawEllipse(box.x + rx, box.y + ry, rx, ry)
+      ..strokePath();
+  }
+
+  @override
+  void paint(Context context) {
+    assert(() {
+      if (Document.debug) debugPaint(context);
+      return true;
+    }());
+
+    final rx = box.w / 2.0;
+    final ry = box.h / 2.0;
+
+    if (child != null) {
+      final mat = Matrix4.identity();
+      mat.translate(box.x, box.y);
+      context.canvas
+        ..saveContext()
+        ..drawEllipse(box.x + rx, box.y + ry, rx, ry)
+        ..clipPath()
+        ..setTransform(mat);
+      child.paint(context);
+      context.canvas.restoreContext();
+    }
+  }
+}
