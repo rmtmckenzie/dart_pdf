@@ -357,22 +357,14 @@ class CustomPaint extends SingleChildWidget {
   final PdfPoint size;
 
   @override
-  void paint(Context context) {
-    assert(() {
-      if (Document.debug) debugPaint(context);
-      return true;
-    }());
-
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
     if (child != null) {
-      final mat = Matrix4.identity();
-      mat.translate(box.x, box.y);
-      context.canvas
-        ..saveContext()
-        ..setTransform(mat);
-      painter(context.canvas, box.size);
-      child.paint(context);
-      foregroundPainter(context.canvas, box.size);
-      context.canvas.restoreContext();
+      child.layout(context, constraints.tighten(width: size.x, height: size.y),
+          parentUsesSize: parentUsesSize);
+      box = child.box;
+    } else {
+      box = PdfRect.fromPoints(PdfPoint.zero, constraints.constrain(size));
     }
   }
 }
