@@ -28,6 +28,7 @@ part 'widgets/content.dart';
 part 'widgets/document.dart';
 part 'widgets/flex.dart';
 part 'widgets/geometry.dart';
+part 'widgets/grid_view.dart';
 part 'widgets/image.dart';
 part 'widgets/placeholders.dart';
 part 'widgets/table.dart';

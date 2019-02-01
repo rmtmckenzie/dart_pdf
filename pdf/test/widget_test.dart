@@ -23,7 +23,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('Pdf', () {
-    Document.debug = false;
+    Document.debug = true;
 
     var pdf = Document(deflate: zlib.encode);
 
@@ -50,7 +50,7 @@ void main() {
                           width: 2.0)),
                   child: Text("Hello World",
                       textScaleFactor: 2.0, textAlign: TextAlign.center)),
-              Align(alignment: Alignment.topLeft, child: Text("How are you?")),
+              Align(alignment: Alignment.topLeft, child: Text("Left align")),
               Padding(padding: EdgeInsets.all(5.0)),
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -65,7 +65,12 @@ void main() {
               Padding(
                   padding: EdgeInsets.only(left: 30, top: 20),
                   child: Lorem(textAlign: TextAlign.justify)),
-              Expanded(child: FittedBox(child: Text("Expanded"))),
+              Expanded(
+                  child: Transform.scale(
+                      child: Transform.rotate(
+                          child: FittedBox(child: Text("Expanded")),
+                          angle: 0.2),
+                      scale: 0.9)),
               Container(
                   padding: EdgeInsets.only(top: 5),
                   decoration:
@@ -76,6 +81,18 @@ void main() {
                           font: PdfFont.timesBoldItalic(pdf.document)),
                       textScaleFactor: 3.0)),
             ])));
+
+    pdf.addPage(Page(
+        pageFormat: PdfPageFormat(400.0, 400.0),
+        margin: EdgeInsets.all(10.0),
+        build: (Context context) => Center(
+            child: GridView(
+                crossAxisCount: 3,
+                direction: Axis.vertical,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
+                padding: EdgeInsets.all(10.0),
+                children: List<Widget>.generate(9, (n) => Text("${n + 1}"))))));
 
     pdf.addPage(MultiPage(
         pageFormat: PdfPageFormat(400.0, 200.0),
