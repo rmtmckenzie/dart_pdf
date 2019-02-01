@@ -9,8 +9,7 @@ Future<PdfDocument> generateDocument(PdfPageFormat format) async {
   final lorem = LoremText();
 
   pdf.addPage(MultiPage(
-      pageFormat:
-          format.applyMargin(
+      pageFormat: format.applyMargin(
           left: 2.0 * PdfPageFormat.cm,
           top: 2.0 * PdfPageFormat.cm,
           right: 2.0 * PdfPageFormat.cm,
