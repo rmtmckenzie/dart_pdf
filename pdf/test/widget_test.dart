@@ -113,7 +113,15 @@ void main() {
                 ["Dynatronics Accessories", "Cong Ch'en", "China"],
                 ["York Steak House", "Outi Vuorinen", "Finland"],
                 ["Weathervane", "Else Jeremiassen", "Iceland"],
-              ])
+              ]),
+              CustomPaint(
+                  size: PdfPoint(150, 150),
+                  painter: (PdfGraphics canvas, PdfPoint size) {
+                    canvas
+                      ..setColor(PdfColor.indigo)
+                      ..drawRRect(0, 0, size.x, size.y, 30, 30)
+                      ..fillPath();
+                  }),
             ]));
 
     var file = File('widgets.pdf');
