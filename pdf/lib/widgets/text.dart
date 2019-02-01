@@ -208,7 +208,7 @@ class Text extends Widget {
   @protected
   void debugPaint(Context context) {
     context.canvas
-      ..setColor(PdfColor.blue)
+      ..setStrokeColor(PdfColor.blue)
       ..drawRect(box.x, box.y, box.w, box.h)
       ..strokePath();
   }
@@ -216,7 +216,7 @@ class Text extends Widget {
   @override
   void paint(Context context) {
     super.paint(context);
-    context.canvas.setColor(style.color);
+    context.canvas.setFillColor(style.color);
 
     for (var word in _words) {
       context.canvas.drawString(style.font, style.fontSize * textScaleFactor,

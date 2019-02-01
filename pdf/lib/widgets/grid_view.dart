@@ -146,7 +146,7 @@ class GridView extends MultiChildWidget {
     super.debugPaint(context);
 
     context.canvas
-      ..setColor(PdfColor.lime)
+      ..setFillColor(PdfColor.lime)
       ..moveTo(box.l, box.b)
       ..lineTo(box.r, box.b)
       ..lineTo(box.r, box.t)

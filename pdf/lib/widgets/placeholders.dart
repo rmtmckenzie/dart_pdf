@@ -46,7 +46,7 @@ class Placeholder extends Widget {
     super.paint(context);
 
     context.canvas
-      ..setColor(color)
+      ..setStrokeColor(color)
       ..moveTo(box.x, box.y)
       ..lineTo(box.r, box.t)
       ..moveTo(box.x, box.t)

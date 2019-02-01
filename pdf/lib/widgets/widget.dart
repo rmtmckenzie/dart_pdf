@@ -66,7 +66,7 @@ abstract class Widget {
   @protected
   void debugPaint(Context context) {
     context.canvas
-      ..setColor(PdfColor.purple)
+      ..setStrokeColor(PdfColor.purple)
       ..drawRect(box.x, box.y, box.w, box.h)
       ..strokePath();
   }

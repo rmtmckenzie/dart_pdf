@@ -95,7 +95,7 @@ class Padding extends SingleChildWidget {
   @override
   void debugPaint(Context context) {
     context.canvas
-      ..setColor(PdfColor.lime)
+      ..setFillColor(PdfColor.lime)
       ..moveTo(box.x, box.y)
       ..lineTo(box.r, box.y)
       ..lineTo(box.r, box.t)
@@ -383,7 +383,7 @@ class ClipRect extends SingleChildWidget {
   @protected
   void debugPaint(Context context) {
     context.canvas
-      ..setColor(PdfColor.deepPurple)
+      ..setStrokeColor(PdfColor.deepPurple)
       ..drawRect(box.x, box.y, box.w, box.h)
       ..strokePath();
   }
@@ -418,7 +418,7 @@ class ClipOval extends SingleChildWidget {
     final ry = box.h / 2.0;
 
     context.canvas
-      ..setColor(PdfColor.deepPurple)
+      ..setStrokeColor(PdfColor.deepPurple)
       ..drawEllipse(box.x + rx, box.y + ry, rx, ry)
       ..strokePath();
   }

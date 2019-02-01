@@ -50,7 +50,7 @@ class BoxBorder {
 
     if (top || bottom || left || right) {
       context.canvas
-        ..setColor(color)
+        ..setStrokeColor(color)
         ..setLineWidth(width);
 
       if (top) {
@@ -102,7 +102,7 @@ class BoxDecoration {
 
     if (color != null) {
       context.canvas
-        ..setColor(color)
+        ..setFillColor(color)
         ..drawRect(box.x, box.y, box.w, box.h)
         ..fillPath();
     }
