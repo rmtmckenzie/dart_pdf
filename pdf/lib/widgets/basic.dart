@@ -342,6 +342,60 @@ class FittedBox extends SingleChildWidget {
   }
 }
 
+class AspectRatio extends SingleChildWidget {
+  AspectRatio({@required this.aspectRatio, Widget child})
+      : assert(aspectRatio != null),
+        super(child: child);
+
+  /// The aspect ratio to attempt to use.
+  final double aspectRatio;
+
+  PdfPoint _applyAspectRatio(BoxConstraints constraints) {
+    if (constraints.isTight) return constraints.smallest;
+
+    double width = constraints.maxWidth;
+    double height;
+
+    if (width.isFinite) {
+      height = width / aspectRatio;
+    } else {
+      height = constraints.maxHeight;
+      width = height * aspectRatio;
+    }
+
+    if (width > constraints.maxWidth) {
+      width = constraints.maxWidth;
+      height = width / aspectRatio;
+    }
+
+    if (height > constraints.maxHeight) {
+      height = constraints.maxHeight;
+      width = height * aspectRatio;
+    }
+
+    if (width < constraints.minWidth) {
+      width = constraints.minWidth;
+      height = width / aspectRatio;
+    }
+
+    if (height < constraints.minHeight) {
+      height = constraints.minHeight;
+      width = height * aspectRatio;
+    }
+
+    return constraints.constrain(PdfPoint(width, height));
+  }
+
+  @override
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
+    box = PdfRect.fromPoints(PdfPoint.zero, _applyAspectRatio(constraints));
+    if (child != null)
+      child.layout(
+          context, BoxConstraints.tightFor(width: box.w, height: box.h));
+  }
+}
+
 typedef CustomPainter(PdfGraphics canvas, PdfPoint size);
 
 class CustomPaint extends SingleChildWidget {
