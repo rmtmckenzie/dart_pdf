@@ -116,11 +116,12 @@ void main() {
                 ["Weathervane", "Else Jeremiassen", "Iceland"],
               ]),
               CustomPaint(
-                  size: PdfPoint(150, 150),
+                  size: PdfPoint(50, 50),
                   painter: (PdfGraphics canvas, PdfPoint size) {
+                    print(size);
                     canvas
                       ..setColor(PdfColor.indigo)
-                      ..drawRRect(0, 0, size.x, size.y, 30, 30)
+                      ..drawRRect(0, 0, size.x, size.y, 10, 10)
                       ..fillPath();
                   }),
             ]));
