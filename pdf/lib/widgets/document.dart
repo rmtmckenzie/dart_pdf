@@ -117,7 +117,10 @@ class Page extends BasePage {
   }
 
   void _paint(Widget child, Context context) {
-    if (Document.debug) debugPaint(context);
+    assert(() {
+      if (Document.debug) debugPaint(context);
+      return true;
+    }());
 
     if (child != null) {
       child.paint(context);
@@ -166,7 +169,10 @@ class MultiPage extends Page {
         final pdfPage = PdfPage(document.document, pageFormat: pageFormat);
         final canvas = pdfPage.getGraphics();
         context = Context(page: pdfPage, canvas: canvas, inherited: inherited);
-        if (Document.debug) debugPaint(context);
+        assert(() {
+          if (Document.debug) debugPaint(context);
+          return true;
+        }());
         offsetStart = pageFormat.height - margin.top;
         offsetEnd = margin.bottom;
         if (header != null) {
