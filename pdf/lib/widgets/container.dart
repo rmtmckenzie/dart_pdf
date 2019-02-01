@@ -125,17 +125,6 @@ class DecoratedBox extends SingleChildWidget {
   final DecorationPosition position;
 
   @override
-  void layout(Context context, BoxConstraints constraints,
-      {parentUsesSize = false}) {
-    if (child != null) {
-      child.layout(context, constraints, parentUsesSize: true);
-      box = child.box;
-    } else {
-      box = PdfRect.zero;
-    }
-  }
-
-  @override
   void paint(Context context) {
     if (position == DecorationPosition.background) {
       decoration.paintBackground(context, box);

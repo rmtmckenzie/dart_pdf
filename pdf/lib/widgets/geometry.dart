@@ -69,6 +69,12 @@ class BoxConstraints {
     return result;
   }
 
+  PdfRect constrainRect(
+      {double width = double.infinity, double height = double.infinity}) {
+    final result = PdfPoint(constrainWidth(width), constrainHeight(height));
+    return PdfRect.fromPoints(PdfPoint.zero, result);
+  }
+
   double constrainWidth([double width = double.infinity]) {
     return width.clamp(minWidth, maxWidth);
   }
@@ -77,7 +83,7 @@ class BoxConstraints {
     return height.clamp(minHeight, maxHeight);
   }
 
-  /// Returns a size that attempts to meet the following conditions, in order:
+  /// Returns a size that attempts to meet the conditions
   PdfPoint constrainSizeAndAttemptToPreserveAspectRatio(PdfPoint size) {
     if (isTight) {
       PdfPoint result = smallest;

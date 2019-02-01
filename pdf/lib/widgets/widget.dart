@@ -98,7 +98,7 @@ abstract class StatelessWidget extends Widget {
       _child.layout(context, constraints, parentUsesSize: parentUsesSize);
       box = _child.box;
     } else {
-      box = PdfRect.zero;
+      box = PdfRect.fromPoints(PdfPoint.zero, constraints.smallest);
     }
   }
 
@@ -125,6 +125,17 @@ abstract class SingleChildWidget extends Widget {
   SingleChildWidget({this.child}) : super();
 
   final Widget child;
+
+  @override
+  void layout(Context context, BoxConstraints constraints,
+      {parentUsesSize = false}) {
+    if (child != null) {
+      child.layout(context, constraints, parentUsesSize: parentUsesSize);
+      box = child.box;
+    } else {
+      box = PdfRect.fromPoints(PdfPoint.zero, constraints.smallest);
+    }
+  }
 
   @override
   void paint(Context context) {

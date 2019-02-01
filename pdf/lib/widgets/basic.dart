@@ -83,14 +83,12 @@ class Padding extends SingleChildWidget {
     if (child != null) {
       final childConstraints = constraints.deflate(padding);
       child.layout(context, childConstraints, parentUsesSize: parentUsesSize);
-      box = PdfRect(
-          0.0,
-          0.0,
-          constraints.constrainWidth(child.box.w + padding.horizontal),
-          constraints.constrainHeight(child.box.h + padding.vertical));
+      box = constraints.constrainRect(
+          width: child.box.w + padding.horizontal,
+          height: child.box.h + padding.vertical);
     } else {
-      box = PdfRect(0.0, 0.0, constraints.constrainWidth(padding.horizontal),
-          constraints.constrainHeight(padding.vertical));
+      box = constraints.constrainRect(
+          width: padding.horizontal, height: padding.vertical);
     }
   }
 
@@ -190,17 +188,6 @@ class Transform extends SingleChildWidget {
   }
 
   @override
-  void layout(Context context, BoxConstraints constraints,
-      {parentUsesSize = false}) {
-    if (child != null) {
-      child.layout(context, constraints, parentUsesSize: parentUsesSize);
-      box = child.box;
-    } else {
-      box = PdfRect.zero;
-    }
-  }
-
-  @override
   void paint(Context context) {
     assert(() {
       if (Document.debug) debugPaint(context);
@@ -251,23 +238,19 @@ class Align extends SingleChildWidget {
     if (child != null) {
       child.layout(context, constraints.loosen(), parentUsesSize: true);
 
-      box = PdfRect.fromPoints(
-          PdfPoint.zero,
-          constraints.constrain(PdfPoint(
-              shrinkWrapWidth
-                  ? child.box.w * (widthFactor ?? 1.0)
-                  : double.infinity,
-              shrinkWrapHeight
-                  ? child.box.h * (heightFactor ?? 1.0)
-                  : double.infinity)));
+      box = constraints.constrainRect(
+          width: shrinkWrapWidth
+              ? child.box.w * (widthFactor ?? 1.0)
+              : double.infinity,
+          height: shrinkWrapHeight
+              ? child.box.h * (heightFactor ?? 1.0)
+              : double.infinity);
 
       child.box = alignment.inscribe(child.box.size, box);
     } else {
-      box = PdfRect.fromPoints(
-          PdfPoint.zero,
-          constraints.constrain(PdfPoint(
-              shrinkWrapWidth ? 0.0 : double.infinity,
-              shrinkWrapHeight ? 0.0 : double.infinity)));
+      box = constraints.constrainRect(
+          width: shrinkWrapWidth ? 0.0 : double.infinity,
+          height: shrinkWrapHeight ? 0.0 : double.infinity);
     }
   }
 }

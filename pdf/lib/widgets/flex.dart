@@ -350,7 +350,6 @@ class Flex extends MultiChildWidget {
         size = constraints.constrain(PdfPoint(idealSize, crossSize));
         actualSize = size.x;
         crossSize = size.y;
-
         break;
       case Axis.vertical:
         size = constraints.constrain(PdfPoint(crossSize, idealSize));
@@ -501,11 +500,19 @@ class Expanded extends SingleChildWidget {
     this._flex = flex;
     this._fit = FlexFit.tight;
   }
+}
 
-  @override
-  void layout(Context context, BoxConstraints constraints,
-      {parentUsesSize = false}) {
-    child.layout(context, constraints, parentUsesSize: parentUsesSize);
-    box = child.box;
-  }
+class ListView extends Flex {
+  ListView(
+      {Axis direction = Axis.vertical,
+      EdgeInsets padding,
+      double spacing = 0.0,
+      List<Widget> children = const []})
+      : super(
+            direction: direction,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            verticalDirection: VerticalDirection.down,
+            children: children);
 }
