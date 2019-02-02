@@ -74,6 +74,7 @@ class BoxBorder {
       if (left) {
         if (!bottom) {
           context.canvas.moveTo(box.x, box.y);
+          context.canvas.lineTo(box.x, box.t);
         } else if (right && top) {
           context.canvas.closePath();
         } else
@@ -85,14 +86,21 @@ class BoxBorder {
   }
 }
 
+enum BoxShape { circle, rectangle }
+
 @immutable
 class BoxDecoration {
-  const BoxDecoration({this.color, this.border});
+  const BoxDecoration(
+      {this.color,
+      this.border,
+      this.borderRadius,
+      this.shape: BoxShape.rectangle});
 
   /// The color to fill in the background of the box.
   final PdfColor color;
-
   final BoxBorder border;
+  final double borderRadius;
+  final BoxShape shape;
 
   void paintBackground(Context context, PdfRect box) {
     assert(box.x != null);
@@ -101,9 +109,22 @@ class BoxDecoration {
     assert(box.h != null);
 
     if (color != null) {
+      switch (shape) {
+        case BoxShape.rectangle:
+          if (borderRadius == null)
+            context.canvas.drawRect(box.x, box.y, box.w, box.h);
+          else
+            context.canvas.drawRRect(
+                box.x, box.y, box.w, box.h, borderRadius, borderRadius);
+
+          break;
+        case BoxShape.circle:
+          context.canvas.drawEllipse(box.x + box.w / 2.0, box.y + box.h / 2.0,
+              box.w / 2.0, box.h / 2.0);
+          break;
+      }
       context.canvas
         ..setFillColor(color)
-        ..drawRect(box.x, box.y, box.w, box.h)
         ..fillPath();
     }
   }

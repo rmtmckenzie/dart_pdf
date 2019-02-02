@@ -96,8 +96,6 @@ class Paragraph extends StatelessWidget {
 
 class Bullet extends StatelessWidget {
   final String text;
-  static final shape =
-      "m 7.4368644,5.0000001 c 0,1.345843 -1.0910213,2.4368643 -2.4368644,2.4368643 -1.3458431,0 -2.4368644,-1.0910213 -2.4368644,-2.4368643 0,-1.3458431 1.0910213,-2.4368644 2.4368644,-2.4368644 1.3458431,0 2.4368644,1.0910213 2.4368644,2.4368644 z";
 
   Bullet({this.text});
 
@@ -109,11 +107,15 @@ class Bullet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Container(
+                width: 2.0 * PdfPageFormat.mm,
+                height: 2.0 * PdfPageFormat.mm,
                 margin: EdgeInsets.only(
-                    left: 5.0 * PdfPageFormat.mm,
-                    right: 1.0 * PdfPageFormat.mm),
-                child: Shape(shape,
-                    fillColor: PdfColor.black, width: 10.0, height: 10.0),
+                  top: 0.5 * PdfPageFormat.mm,
+                  left: 5.0 * PdfPageFormat.mm,
+                  right: 2.0 * PdfPageFormat.mm,
+                ),
+                decoration: BoxDecoration(
+                    color: PdfColor.black, shape: BoxShape.circle),
               ),
               Expanded(child: Text(text, style: Theme.of(context).bulletStyle))
             ]));
