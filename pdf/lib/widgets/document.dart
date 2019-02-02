@@ -90,12 +90,13 @@ class Page extends BasePage {
         Context(page: pdfPage, canvas: canvas, inherited: inherited);
     if (_build != null) {
       final child = _build(context);
-      _layout(child, context, constraints);
-      _paint(child, context);
+      layout(child, context, constraints);
+      paint(child, context);
     }
   }
 
-  void _layout(Widget child, Context context, BoxConstraints constraints,
+  @protected
+  void layout(Widget child, Context context, BoxConstraints constraints,
       {parentUsesSize = false}) {
     if (child != null) {
       final childConstraints = BoxConstraints(
@@ -116,7 +117,8 @@ class Page extends BasePage {
     }
   }
 
-  void _paint(Widget child, Context context) {
+  @protected
+  void paint(Widget child, Context context) {
     assert(() {
       if (Document.debug) debugPaint(context);
       return true;
