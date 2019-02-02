@@ -63,10 +63,9 @@ class Block extends StatelessWidget {
             Container(
               width: 6,
               height: 6,
-              margin: EdgeInsets.only(top: 2.5, left: 2, right:5),
+              margin: EdgeInsets.only(top: 2.5, left: 2, right: 5),
               decoration: BoxDecoration(color: green, shape: BoxShape.circle),
             ),
-            
             Text(title, style: Theme.of(context).defaultTextStyleBold),
           ]),
           Container(
@@ -94,7 +93,7 @@ class Category extends StatelessWidget {
     return Container(
         decoration: BoxDecoration(color: lightGreen, borderRadius: 6),
         margin: EdgeInsets.only(bottom: 10, top: 20),
-        padding: EdgeInsets.fromLTRB( 10,  7, 10, 4),
+        padding: EdgeInsets.fromLTRB(10, 7, 10, 4),
         child: Text(title, textScaleFactor: 1.5));
   }
 }
@@ -104,7 +103,7 @@ void main() {
   final pdf = Document(deflate: zlib.encode);
 
   pdf.addPage(MyPage(
-    pageFormat: PdfPageFormat.a4,
+    pageFormat: PdfPageFormat.a4.copyWith(marginTop: 4 * PdfPageFormat.cm),
     build: (Context context) => Row(children: <Widget>[
           Expanded(
               child: Column(
