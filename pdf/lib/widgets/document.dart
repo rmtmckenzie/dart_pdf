@@ -111,9 +111,9 @@ class Page extends BasePage {
       child.layout(context, childConstraints, parentUsesSize: parentUsesSize);
       child.box = PdfRect(
           margin.left,
-          pageFormat.height - child.box.h - margin.top,
-          child.box.w,
-          child.box.h);
+          pageFormat.height - child.box.height - margin.top,
+          child.box.width,
+          child.box.height);
     }
   }
 
@@ -184,11 +184,11 @@ class MultiPage extends Page {
                 parentUsesSize: false);
             headerWidget.box = PdfRect(
                 margin.left,
-                offsetStart - headerWidget.box.h,
-                headerWidget.box.w,
-                headerWidget.box.h);
+                offsetStart - headerWidget.box.height,
+                headerWidget.box.width,
+                headerWidget.box.height);
             headerWidget.paint(context);
-            offsetStart -= headerWidget.box.h;
+            offsetStart -= headerWidget.box.height;
           }
         }
 
@@ -198,9 +198,9 @@ class MultiPage extends Page {
             footerWidget.layout(context, childConstraints,
                 parentUsesSize: false);
             footerWidget.box = PdfRect(margin.left, margin.bottom,
-                footerWidget.box.w, footerWidget.box.h);
+                footerWidget.box.width, footerWidget.box.height);
             footerWidget.paint(context);
-            offsetEnd += footerWidget.box.h;
+            offsetEnd += footerWidget.box.height;
           }
         }
       }
@@ -212,8 +212,8 @@ class MultiPage extends Page {
 
       child.layout(context, childConstraints, parentUsesSize: false);
 
-      if (offsetStart - child.box.h < offsetEnd) {
-        if (child.box.h < pageFormat.height - margin.vertical) {
+      if (offsetStart - child.box.height < offsetEnd) {
+        if (child.box.height < pageFormat.height - margin.vertical) {
           context = null;
           continue;
         }
@@ -227,8 +227,8 @@ class MultiPage extends Page {
         child.layout(context,
             childConstraints.copyWith(maxHeight: offsetStart - offsetEnd),
             parentUsesSize: false);
-        child.box = PdfRect(
-            margin.left, offsetStart - child.box.h, child.box.w, child.box.h);
+        child.box = PdfRect(margin.left, offsetStart - child.box.height,
+            child.box.width, child.box.height);
         child.paint(context);
 
         if (span.canSpan) {
@@ -241,10 +241,10 @@ class MultiPage extends Page {
         continue;
       }
 
-      child.box = PdfRect(
-          margin.left, offsetStart - child.box.h, child.box.w, child.box.h);
+      child.box = PdfRect(margin.left, offsetStart - child.box.height,
+          child.box.width, child.box.height);
       child.paint(context);
-      offsetStart -= child.box.h;
+      offsetStart -= child.box.height;
       index++;
     }
   }

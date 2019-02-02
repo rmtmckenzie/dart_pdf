@@ -124,15 +124,15 @@ class Text extends Widget {
         delta = (totalWidth - wordsWidth) / (words.length - 1);
         var x = 0.0;
         for (var word in words) {
-          word._box =
-              PdfRect(word._box.x + x, word._box.y, word._box.w, word._box.h);
+          word._box = PdfRect(
+              word._box.x + x, word._box.y, word._box.width, word._box.height);
           x += delta;
         }
         return totalWidth;
     }
     for (var word in words) {
-      word._box =
-          PdfRect(word._box.x + delta, word._box.y, word._box.w, word._box.h);
+      word._box = PdfRect(
+          word._box.x + delta, word._box.y, word._box.width, word._box.height);
     }
     return totalWidth;
   }
@@ -170,13 +170,15 @@ class Text extends Widget {
       final box =
           style.font.stringBounds(word) * (style.fontSize * textScaleFactor);
 
-      var ww = box.w;
-      var wh = box.h;
+      var ww = box.width;
+      var wh = box.height;
 
       if (x + ww > cw) {
         if (wCount == 0) break;
         w = math.max(
-            w, _realignLine(_words.sublist(lineStart), cw, x - space.w, false));
+            w,
+            _realignLine(
+                _words.sublist(lineStart), cw, x - space.width, false));
         lineStart += wCount;
         if (maxLines != null && ++lines > maxLines) break;
 
@@ -191,7 +193,7 @@ class Text extends Widget {
       var wx = x;
       var wy = y;
 
-      x += ww + space.w;
+      x += ww + space.width;
       lh = math.max(lh, wh);
 
       final wd = _Word(word, PdfRect(box.x + wx, box.y + wy + wh, ww, wh));
@@ -199,7 +201,7 @@ class Text extends Widget {
       wCount++;
     }
     w = math.max(
-        w, _realignLine(_words.sublist(lineStart), cw, x - space.w, true));
+        w, _realignLine(_words.sublist(lineStart), cw, x - space.width, true));
     h += lh;
     box = PdfRect(0.0, 0.0, constraints.constrainWidth(w),
         constraints.constrainHeight(h));
@@ -209,7 +211,7 @@ class Text extends Widget {
   void debugPaint(Context context) {
     context.canvas
       ..setStrokeColor(PdfColor.blue)
-      ..drawRect(box.x, box.y, box.w, box.h)
+      ..drawRect(box.x, box.y, box.width, box.height)
       ..strokePath();
   }
 
@@ -220,7 +222,7 @@ class Text extends Widget {
 
     for (var word in _words) {
       context.canvas.drawString(style.font, style.fontSize * textScaleFactor,
-          word.text, box.x + word._box.x, box.y + box.h - word._box.y);
+          word.text, box.x + word._box.x, box.y + box.height - word._box.y);
     }
   }
 }

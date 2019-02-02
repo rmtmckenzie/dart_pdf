@@ -45,7 +45,7 @@ class Image extends Widget {
   void paint(Context context) {
     super.paint(context);
 
-    context.canvas.drawImage(image, box.x, box.y, box.w, box.h);
+    context.canvas.drawImage(image, box.x, box.y, box.width, box.height);
   }
 }
 
@@ -89,8 +89,8 @@ class Shape extends Widget {
     super.paint(context);
 
     final mat = Matrix4.identity();
-    mat.translate(box.x, box.y + box.h);
-    mat.scale(box.w / width, -box.h / height);
+    mat.translate(box.x, box.y + box.height);
+    mat.scale(box.width / width, -box.height / height);
     context.canvas
       ..saveContext()
       ..setTransform(mat);

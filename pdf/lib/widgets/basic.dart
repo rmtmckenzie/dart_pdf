@@ -84,8 +84,8 @@ class Padding extends SingleChildWidget {
       final childConstraints = constraints.deflate(padding);
       child.layout(context, childConstraints, parentUsesSize: parentUsesSize);
       box = constraints.constrainRect(
-          width: child.box.w + padding.horizontal,
-          height: child.box.h + padding.vertical);
+          width: child.box.width + padding.horizontal,
+          height: child.box.height + padding.vertical);
     } else {
       box = constraints.constrainRect(
           width: padding.horizontal, height: padding.vertical);
@@ -97,13 +97,13 @@ class Padding extends SingleChildWidget {
     context.canvas
       ..setFillColor(PdfColor.lime)
       ..moveTo(box.x, box.y)
-      ..lineTo(box.r, box.y)
-      ..lineTo(box.r, box.t)
-      ..lineTo(box.x, box.t)
+      ..lineTo(box.right, box.y)
+      ..lineTo(box.right, box.top)
+      ..lineTo(box.x, box.top)
       ..moveTo(box.x + padding.left, box.y + padding.bottom)
-      ..lineTo(box.x + padding.left, box.t - padding.top)
-      ..lineTo(box.r - padding.right, box.t - padding.top)
-      ..lineTo(box.r - padding.right, box.y + padding.bottom)
+      ..lineTo(box.x + padding.left, box.top - padding.top)
+      ..lineTo(box.right - padding.right, box.top - padding.top)
+      ..lineTo(box.right - padding.right, box.y + padding.bottom)
       ..fillPath();
   }
 
@@ -240,10 +240,10 @@ class Align extends SingleChildWidget {
 
       box = constraints.constrainRect(
           width: shrinkWrapWidth
-              ? child.box.w * (widthFactor ?? 1.0)
+              ? child.box.width * (widthFactor ?? 1.0)
               : double.infinity,
           height: shrinkWrapHeight
-              ? child.box.h * (heightFactor ?? 1.0)
+              ? child.box.height * (heightFactor ?? 1.0)
               : double.infinity);
 
       child.box = alignment.inscribe(child.box.size, box);
@@ -333,7 +333,7 @@ class FittedBox extends SingleChildWidget {
 
       context.canvas
         ..saveContext()
-        ..drawRect(box.x, box.y, box.w, box.h)
+        ..drawRect(box.x, box.y, box.width, box.height)
         ..clipPath()
         ..setTransform(mat);
       child.paint(context);
@@ -391,8 +391,8 @@ class AspectRatio extends SingleChildWidget {
       {parentUsesSize = false}) {
     box = PdfRect.fromPoints(PdfPoint.zero, _applyAspectRatio(constraints));
     if (child != null)
-      child.layout(
-          context, BoxConstraints.tightFor(width: box.w, height: box.h));
+      child.layout(context,
+          BoxConstraints.tightFor(width: box.width, height: box.height));
   }
 }
 

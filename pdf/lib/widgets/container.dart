@@ -45,8 +45,8 @@ class BoxBorder {
   void paintBorders(Context context, PdfRect box) {
     assert(box.x != null);
     assert(box.y != null);
-    assert(box.w != null);
-    assert(box.h != null);
+    assert(box.width != null);
+    assert(box.height != null);
 
     if (top || bottom || left || right) {
       context.canvas
@@ -54,19 +54,19 @@ class BoxBorder {
         ..setLineWidth(width);
 
       if (top) {
-        context.canvas.drawLine(box.x, box.t, box.r, box.t);
+        context.canvas.drawLine(box.x, box.top, box.right, box.top);
       }
 
       if (right) {
         if (!top) {
-          context.canvas.moveTo(box.r, box.t);
+          context.canvas.moveTo(box.right, box.top);
         }
-        context.canvas.lineTo(box.r, box.y);
+        context.canvas.lineTo(box.right, box.y);
       }
 
       if (bottom) {
         if (!right) {
-          context.canvas.moveTo(box.r, box.y);
+          context.canvas.moveTo(box.right, box.y);
         }
         context.canvas.lineTo(box.x, box.y);
       }
@@ -74,11 +74,11 @@ class BoxBorder {
       if (left) {
         if (!bottom) {
           context.canvas.moveTo(box.x, box.y);
-          context.canvas.lineTo(box.x, box.t);
+          context.canvas.lineTo(box.x, box.top);
         } else if (right && top) {
           context.canvas.closePath();
         } else
-          context.canvas.lineTo(box.x, box.t);
+          context.canvas.lineTo(box.x, box.top);
       }
 
       context.canvas.strokePath();
@@ -105,22 +105,22 @@ class BoxDecoration {
   void paintBackground(Context context, PdfRect box) {
     assert(box.x != null);
     assert(box.y != null);
-    assert(box.w != null);
-    assert(box.h != null);
+    assert(box.width != null);
+    assert(box.height != null);
 
     if (color != null) {
       switch (shape) {
         case BoxShape.rectangle:
           if (borderRadius == null)
-            context.canvas.drawRect(box.x, box.y, box.w, box.h);
+            context.canvas.drawRect(box.x, box.y, box.width, box.height);
           else
-            context.canvas.drawRRect(
-                box.x, box.y, box.w, box.h, borderRadius, borderRadius);
+            context.canvas.drawRRect(box.x, box.y, box.width, box.height,
+                borderRadius, borderRadius);
 
           break;
         case BoxShape.circle:
-          context.canvas.drawEllipse(box.x + box.w / 2.0, box.y + box.h / 2.0,
-              box.w / 2.0, box.h / 2.0);
+          context.canvas.drawEllipse(box.x + box.width / 2.0,
+              box.y + box.height / 2.0, box.width / 2.0, box.height / 2.0);
           break;
       }
       context.canvas

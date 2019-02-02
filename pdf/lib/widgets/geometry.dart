@@ -305,19 +305,19 @@ class Alignment {
 
   /// Returns the point that is this fraction within the given rect.
   PdfPoint withinRect(PdfRect rect) {
-    final double halfWidth = rect.w / 2.0;
-    final double halfHeight = rect.h / 2.0;
+    final double halfWidth = rect.width / 2.0;
+    final double halfHeight = rect.height / 2.0;
     return PdfPoint(
-      rect.l + halfWidth + x * halfWidth,
-      rect.t + halfHeight + y * halfHeight,
+      rect.left + halfWidth + x * halfWidth,
+      rect.top + halfHeight + y * halfHeight,
     );
   }
 
   /// Returns a rect of the given size, aligned within given rect as specified
   /// by this alignment.
   PdfRect inscribe(PdfPoint size, PdfRect rect) {
-    final double halfWidthDelta = (rect.w - size.x) / 2.0;
-    final double halfHeightDelta = (rect.h - size.y) / 2.0;
+    final double halfWidthDelta = (rect.width - size.x) / 2.0;
+    final double halfHeightDelta = (rect.height - size.y) / 2.0;
     return PdfRect(
       rect.x + halfWidthDelta + x * halfWidthDelta,
       rect.y + halfHeightDelta + y * halfHeightDelta,

@@ -123,11 +123,11 @@ class Flex extends MultiChildWidget {
         if (flex == 0) {
           switch (direction) {
             case Axis.horizontal:
-              mainSize = child.box.w;
+              mainSize = child.box.width;
               crossSize = childSize(child, mainSize);
               break;
             case Axis.vertical:
-              mainSize = child.box.h;
+              mainSize = child.box.height;
               crossSize = childSize(child, mainSize);
               break;
           }
@@ -157,36 +157,36 @@ class Flex extends MultiChildWidget {
     return _getIntrinsicSize(
         sizingDirection: Axis.horizontal,
         extent: height,
-        childSize: (Widget child, double extent) => child.box.w);
+        childSize: (Widget child, double extent) => child.box.width);
   }
 
   double computeMaxIntrinsicWidth(double height) {
     return _getIntrinsicSize(
         sizingDirection: Axis.horizontal,
         extent: height,
-        childSize: (Widget child, double extent) => child.box.w);
+        childSize: (Widget child, double extent) => child.box.width);
   }
 
   double computeMinIntrinsicHeight(double width) {
     return _getIntrinsicSize(
         sizingDirection: Axis.vertical,
         extent: width,
-        childSize: (Widget child, double extent) => child.box.h);
+        childSize: (Widget child, double extent) => child.box.height);
   }
 
   double computeMaxIntrinsicHeight(double width) {
     return _getIntrinsicSize(
         sizingDirection: Axis.vertical,
         extent: width,
-        childSize: (Widget child, double extent) => child.box.h);
+        childSize: (Widget child, double extent) => child.box.height);
   }
 
   double _getCrossSize(Widget child) {
     switch (direction) {
       case Axis.horizontal:
-        return child.box.h;
+        return child.box.height;
       case Axis.vertical:
-        return child.box.w;
+        return child.box.width;
     }
     return null;
   }
@@ -194,9 +194,9 @@ class Flex extends MultiChildWidget {
   double _getMainSize(Widget child) {
     switch (direction) {
       case Axis.horizontal:
-        return child.box.w;
+        return child.box.width;
       case Axis.vertical:
-        return child.box.h;
+        return child.box.height;
     }
     return null;
   }
@@ -427,11 +427,11 @@ class Flex extends MultiChildWidget {
       switch (direction) {
         case Axis.horizontal:
           child.box = PdfRect(box.x + childMainPosition,
-              box.y + childCrossPosition, child.box.w, child.box.h);
+              box.y + childCrossPosition, child.box.width, child.box.height);
           break;
         case Axis.vertical:
-          child.box = PdfRect(
-              childCrossPosition, childMainPosition, child.box.w, child.box.h);
+          child.box = PdfRect(childCrossPosition, childMainPosition,
+              child.box.width, child.box.height);
           break;
       }
       if (flipMainAxis) {

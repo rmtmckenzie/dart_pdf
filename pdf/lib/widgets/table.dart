@@ -63,17 +63,17 @@ class TableBorder extends BoxBorder {
       for (var width in widths.sublist(0, widths.length - 1)) {
         offset += width;
         context.canvas.moveTo(offset, box.y);
-        context.canvas.lineTo(offset, box.t);
+        context.canvas.lineTo(offset, box.top);
       }
       context.canvas.strokePath();
     }
 
     if (horizontalInside) {
-      var offset = box.t;
+      var offset = box.top;
       for (var height in heights.sublist(0, heights.length - 1)) {
         offset -= height;
         context.canvas.moveTo(box.x, offset);
-        context.canvas.lineTo(box.r, offset);
+        context.canvas.lineTo(box.right, offset);
       }
       context.canvas.strokePath();
     }
@@ -137,7 +137,7 @@ class Table extends Widget implements SpanningWidget {
       for (var child in row.children) {
         child.layout(context, BoxConstraints());
         final calculatedWidth =
-            child.box.w == double.infinity ? 0.0 : child.box.w;
+            child.box.width == double.infinity ? 0.0 : child.box.width;
         final childFlex = child._flex.toDouble();
         if (flex.length < n + 1) {
           flex.add(childFlex);
@@ -195,9 +195,9 @@ class Table extends Widget implements SpanningWidget {
       for (var child in row.children) {
         final childConstraints = BoxConstraints.tightFor(width: _widths[n]);
         child.layout(context, childConstraints);
-        child.box = PdfRect(x, totalHeight, child.box.w, child.box.h);
+        child.box = PdfRect(x, totalHeight, child.box.width, child.box.height);
         x += _widths[n];
-        lineHeight = math.max(lineHeight, child.box.h);
+        lineHeight = math.max(lineHeight, child.box.height);
         n++;
       }
 
@@ -216,8 +216,11 @@ class Table extends Widget implements SpanningWidget {
       if (index++ < _context.firstLine && !row.repeat) continue;
 
       for (var child in row.children) {
-        child.box = PdfRect(child.box.x,
-            totalHeight - child.box.y - child.box.h, child.box.w, child.box.h);
+        child.box = PdfRect(
+            child.box.x,
+            totalHeight - child.box.y - child.box.height,
+            child.box.width,
+            child.box.height);
       }
 
       if (index >= _context.lastLine) break;

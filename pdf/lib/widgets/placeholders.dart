@@ -48,10 +48,10 @@ class Placeholder extends Widget {
     context.canvas
       ..setStrokeColor(color)
       ..moveTo(box.x, box.y)
-      ..lineTo(box.r, box.t)
-      ..moveTo(box.x, box.t)
-      ..lineTo(box.r, box.y)
-      ..drawRect(box.x, box.y, box.w, box.h)
+      ..lineTo(box.right, box.top)
+      ..moveTo(box.x, box.top)
+      ..lineTo(box.right, box.y)
+      ..drawRect(box.x, box.y, box.width, box.height)
       ..setLineWidth(strokeWidth)
       ..strokePath();
   }

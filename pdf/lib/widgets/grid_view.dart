@@ -97,23 +97,23 @@ class GridView extends MultiChildWidget {
         case Axis.vertical:
           child.box = PdfRect.fromPoints(
               PdfPoint(
-                  (_childCrossAxis - child.box.w) / 2.0 + crossAxis,
+                  (_childCrossAxis - child.box.width) / 2.0 + crossAxis,
                   _totalMain +
                       padding.bottom -
-                      (_childMainAxis - child.box.h) / 2.0 -
+                      (_childMainAxis - child.box.height) / 2.0 -
                       mainAxis -
-                      child.box.h),
+                      child.box.height),
               child.box.size);
           break;
         case Axis.horizontal:
           child.box = PdfRect.fromPoints(
               PdfPoint(
-                  (_childMainAxis - child.box.w) / 2.0 + mainAxis,
+                  (_childMainAxis - child.box.width) / 2.0 + mainAxis,
                   _totalCross +
                       padding.bottom -
-                      (_childCrossAxis - child.box.h) / 2.0 -
+                      (_childCrossAxis - child.box.height) / 2.0 -
                       crossAxis -
-                      child.box.h),
+                      child.box.height),
               child.box.size);
           break;
       }
@@ -147,14 +147,14 @@ class GridView extends MultiChildWidget {
 
     context.canvas
       ..setFillColor(PdfColor.lime)
-      ..moveTo(box.l, box.b)
-      ..lineTo(box.r, box.b)
-      ..lineTo(box.r, box.t)
-      ..lineTo(box.l, box.t)
-      ..moveTo(box.l + padding.left, box.b + padding.bottom)
-      ..lineTo(box.l + padding.left, box.t - padding.top)
-      ..lineTo(box.r - padding.right, box.t - padding.top)
-      ..lineTo(box.r - padding.right, box.b + padding.bottom)
+      ..moveTo(box.left, box.bottom)
+      ..lineTo(box.right, box.bottom)
+      ..lineTo(box.right, box.top)
+      ..lineTo(box.left, box.top)
+      ..moveTo(box.left + padding.left, box.bottom + padding.bottom)
+      ..lineTo(box.left + padding.left, box.top - padding.top)
+      ..lineTo(box.right - padding.right, box.top - padding.top)
+      ..lineTo(box.right - padding.right, box.bottom + padding.bottom)
       ..fillPath();
 
     for (var c = 1; c < crossAxisCount; c++) {
@@ -162,13 +162,13 @@ class GridView extends MultiChildWidget {
         case Axis.vertical:
           context.canvas
             ..drawRect(
-                box.l +
+                box.left +
                     padding.left +
                     (_childCrossAxis + crossAxisSpacing) * c -
                     crossAxisSpacing,
-                box.b + padding.bottom,
+                box.bottom + padding.bottom,
                 math.max(crossAxisSpacing, 1.0),
-                box.h - padding.vertical)
+                box.height - padding.vertical)
             ..fillPath();
           break;
         case Axis.horizontal:
@@ -181,12 +181,12 @@ class GridView extends MultiChildWidget {
         case Axis.vertical:
           context.canvas
             ..drawRect(
-                box.l + padding.left,
-                box.b +
+                box.left + padding.left,
+                box.bottom +
                     padding.bottom +
                     (_childMainAxis + mainAxisSpacing) * c -
                     mainAxisSpacing,
-                box.w - padding.horizontal,
+                box.width - padding.horizontal,
                 math.max(mainAxisSpacing, 1.0))
             ..fillPath();
           break;
