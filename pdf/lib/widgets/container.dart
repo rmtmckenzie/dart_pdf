@@ -94,7 +94,7 @@ class BoxDecoration {
       {this.color,
       this.border,
       this.borderRadius,
-      this.shape: BoxShape.rectangle});
+      this.shape = BoxShape.rectangle});
 
   /// The color to fill in the background of the box.
   final PdfColor color;
