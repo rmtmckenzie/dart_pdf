@@ -107,7 +107,10 @@ Future<PdfDocument> generateDocument(PdfPageFormat format) async {
   final profileImage = await pdfImageFromImageProvider(
       pdf: pdf.document,
       image: fw.NetworkImage(
-          "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200"));
+          "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=200"),
+      onError: (dynamic exception, StackTrace stackTrace) {
+        print("error");
+      });
 
   pdf.addPage(MyPage(
     pageFormat: format.applyMargin(
@@ -180,7 +183,9 @@ Future<PdfDocument> generateDocument(PdfPageFormat format) async {
                         width: 100,
                         height: 100,
                         color: lightGreen,
-                        child: Image(profileImage)))
+                        child: profileImage == null
+                            ? Container()
+                            : Image(profileImage)))
               ])
         ]),
   ));
