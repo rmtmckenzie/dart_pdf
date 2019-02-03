@@ -118,7 +118,6 @@ void main() {
               CustomPaint(
                   size: PdfPoint(50, 50),
                   painter: (PdfGraphics canvas, PdfPoint size) {
-                    print(size);
                     canvas
                       ..setColor(PdfColor.indigo)
                       ..drawRRect(0, 0, size.x, size.y, 10, 10)
