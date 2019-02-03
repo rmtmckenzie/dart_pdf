@@ -22,7 +22,8 @@ class Image extends Widget {
   final BoxFit fit;
 
   Image(this.image, {this.fit = BoxFit.contain})
-      : aspectRatio = (image.height.toDouble() / image.width.toDouble());
+      : assert(image != null),
+        aspectRatio = (image.height.toDouble() / image.width.toDouble());
 
   @override
   void layout(Context context, BoxConstraints constraints,

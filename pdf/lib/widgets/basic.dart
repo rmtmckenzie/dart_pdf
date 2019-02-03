@@ -16,17 +16,7 @@
 
 part of widget;
 
-enum BoxFit {
-  fill,
-  contain,
-  cover,
-  fitWidth,
-  fitHeight,
-
-  none,
-
-  scaleDown
-}
+enum BoxFit { fill, contain, cover, fitWidth, fitHeight, none, scaleDown }
 
 class LimitedBox extends SingleChildWidget {
   LimitedBox({
@@ -64,7 +54,7 @@ class LimitedBox extends SingleChildWidget {
     } else {
       size = _limitConstraints(constraints).constrain(PdfPoint.zero);
     }
-    box = PdfRect(box.x, box.y, size.x, size.y);
+    box = PdfRect.fromPoints(PdfPoint.zero, size);
   }
 }
 
