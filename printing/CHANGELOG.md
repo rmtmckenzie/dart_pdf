@@ -1,3 +1,6 @@
+# 2.0.0
+* BREAKING CHANGE: Update to use AndroidX
+
 # 1.3.3
 * Update Readme
 
