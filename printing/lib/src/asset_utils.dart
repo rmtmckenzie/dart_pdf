@@ -40,13 +40,19 @@ Future<PdfImage> pdfImageFromImageProvider(
   final ImageStream stream =
       image.resolve(configuration ?? ImageConfiguration.empty);
 
+  ImageStreamListener streamListener;
+
   Future<void> listener(ImageInfo image, bool sync) async {
     final PdfImage result =
         await pdfImageFromImage(pdf: pdf, image: image.image);
     if (!completer.isCompleted) {
       completer.complete(result);
     }
-    stream.removeListener(listener);
+
+    if (streamListener != null) {
+      stream.removeListener(streamListener);
+      streamListener = null;
+    }
   }
 
   void errorListener(dynamic exception, StackTrace stackTrace) {
@@ -61,7 +67,9 @@ Future<PdfImage> pdfImageFromImageProvider(
     }
   }
 
-  stream.addListener(listener, onError: errorListener);
+  streamListener = ImageStreamListener(listener, onError: errorListener);
+
+  stream.addListener(streamListener);
   return completer.future;
 }
 
