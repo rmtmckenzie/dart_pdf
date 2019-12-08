@@ -17,6 +17,7 @@
 package net.nfet.flutter.printing;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -45,6 +46,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -54,28 +59,81 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /**
  * PrintingPlugin
  */
-public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHandler {
-    private static PrintManager printManager;
-    private final Activity activity;
-    private final MethodChannel channel;
+public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHandler, FlutterPlugin, ActivityAware {
+    private PrintManager printManager;
+    private Context context;
+    private Activity activity;
     private PrintedPdfDocument mPdfDocument;
     private PrintJob printJob;
     private byte[] documentData;
     private String jobName;
     private LayoutResultCallback callback;
+    private MethodChannel channel;
 
-    private PrintingPlugin(Activity activity, MethodChannel channel) {
-        this.activity = activity;
-        this.channel = channel;
-    }
+    public PrintingPlugin() { }
 
     /**
      * Plugin registration.
      */
     public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "net.nfet.printing");
-        channel.setMethodCallHandler(new PrintingPlugin(registrar.activity(), channel));
-        printManager = (PrintManager) registrar.activity().getSystemService(Context.PRINT_SERVICE);
+        new PrintingPlugin().setupMethodChannel(registrar.activity(), registrar.messenger(), registrar.context());
+    }
+
+    /**
+     * Plugin registration V2
+     */
+    @Override
+    public void onAttachedToEngine(FlutterPluginBinding binding) {
+        setupMethodChannel(null, binding.getBinaryMessenger(), activity);
+    }
+
+    @Override
+    public void onDetachedFromEngine(FlutterPluginBinding binding) {
+        teardownMethodChannel();
+    }
+
+    @Override
+    public void onAttachedToActivity(ActivityPluginBinding binding) {
+        registerActivity(binding.getActivity());
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+        unregisterActivity();
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+        onAttachedToActivity(binding);
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        onDetachedFromActivity();
+    }
+
+    private void setupMethodChannel(Activity activity, BinaryMessenger messenger, Context context) {
+        this.context = context;
+        this.activity = activity;
+        channel = new MethodChannel(messenger, "net.nfet.printing");
+        channel.setMethodCallHandler(this);
+        printManager = (PrintManager) activity.getSystemService(Context.PRINT_SERVICE);
+    }
+
+    private void teardownMethodChannel() {
+        this.context = null;
+        channel.setMethodCallHandler(null);
+        channel = null;
+    }
+
+    private void registerActivity(Activity activity) {
+        this.activity = activity;
+        printManager = (PrintManager) activity.getSystemService(Context.PRINT_SERVICE);
+    }
+
+    private void unregisterActivity() {
+        this.activity = null;
+        printManager = null;
     }
 
     @Override
@@ -103,7 +161,7 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
     public void onLayout(PrintAttributes oldAttributes, PrintAttributes newAttributes,
             CancellationSignal cancellationSignal, LayoutResultCallback callback, Bundle extras) {
         // Create a new PdfDocument with the requested page attributes
-        mPdfDocument = new PrintedPdfDocument(activity, newAttributes);
+        mPdfDocument = new PrintedPdfDocument(context, newAttributes);
 
         // Respond to cancellation request
         if (cancellationSignal.isCanceled()) {
@@ -223,7 +281,7 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
     private void sharePdf(byte[] data, String name) {
         try {
             final File externalFilesDirectory =
-                    activity.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+                    context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
             File shareFile;
             if (name == null) {
                 shareFile = File.createTempFile("document-", ".pdf", externalFilesDirectory);
@@ -235,8 +293,8 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
             stream.write(data);
             stream.close();
 
-            Uri apkURI = FileProvider.getUriForFile(activity,
-                    activity.getApplicationContext().getPackageName() + ".flutter.printing",
+            Uri apkURI = FileProvider.getUriForFile(context,
+                    context.getPackageName() + ".flutter.printing",
                     shareFile);
 
             Intent shareIntent = new Intent();
@@ -245,7 +303,11 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
             shareIntent.putExtra(Intent.EXTRA_STREAM, apkURI);
             shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             Intent chooserIntent = Intent.createChooser(shareIntent, null);
-            activity.startActivity(chooserIntent);
+            if (activity != null) {
+                activity.startActivity(chooserIntent);
+            } else {
+                context.startActivity(chooserIntent);
+            }
             shareFile.deleteOnExit();
         } catch (IOException e) {
             e.printStackTrace();
@@ -254,7 +316,7 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
 
     private void convertHtml(String data, final PrintAttributes.MediaSize size,
             final PrintAttributes.Margins margins, String baseUrl) {
-        final WebView webView = new WebView(activity.getApplicationContext());
+        final WebView webView = new WebView(context);
 
         webView.loadDataWithBaseURL(baseUrl, data, "text/HTML", "UTF-8", null);
 
@@ -275,7 +337,9 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
                         final PrintDocumentAdapter adapter =
                                 webView.createPrintDocumentAdapter("printing");
 
-                        PdfConvert.print(activity, adapter, attributes, new PdfConvert.Result() {
+                        final Context applicationContext = activity != null ? activity : context;
+
+                        PdfConvert.print(applicationContext, adapter, attributes, new PdfConvert.Result() {
                             @Override
                             public void onSuccess(File file) {
                                 try {

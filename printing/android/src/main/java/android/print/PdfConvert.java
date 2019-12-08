@@ -16,7 +16,7 @@
 
 package android.print;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 
@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class PdfConvert {
-    public static void print(final Activity activity, final PrintDocumentAdapter adapter,
-            final PrintAttributes attributes, final Result result) {
+    public static void print(final Context context, final PrintDocumentAdapter adapter,
+                             final PrintAttributes attributes, final Result result) {
         adapter.onLayout(null, attributes, null, new PrintDocumentAdapter.LayoutResultCallback() {
             @Override
             public void onLayoutFinished(PrintDocumentInfo info, boolean changed) {
-                File outputDir = activity.getCacheDir();
+                File outputDir = context.getCacheDir();
                 File outputFile = null;
                 try {
                     outputFile = File.createTempFile("printing", "pdf", outputDir);
