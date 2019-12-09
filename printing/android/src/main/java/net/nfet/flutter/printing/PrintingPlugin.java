@@ -38,6 +38,7 @@ import android.print.pdf.PrintedPdfDocument;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -70,13 +71,14 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
     private LayoutResultCallback callback;
     private MethodChannel channel;
 
-    public PrintingPlugin() { }
+    public PrintingPlugin() {
+    }
 
     /**
      * Plugin registration.
      */
     public static void registerWith(Registrar registrar) {
-        new PrintingPlugin().setupMethodChannel(registrar.activity(), registrar.messenger(), registrar.context());
+        new PrintingPlugin().setupMethodChannel(registrar.messenger(), registrar.context(), registrar.activity());
     }
 
     /**
@@ -84,7 +86,7 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
      */
     @Override
     public void onAttachedToEngine(FlutterPluginBinding binding) {
-        setupMethodChannel(null, binding.getBinaryMessenger(), activity);
+        setupMethodChannel(binding.getBinaryMessenger(), binding.getApplicationContext(), null);
     }
 
     @Override
@@ -112,38 +114,42 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
         onDetachedFromActivity();
     }
 
-    private void setupMethodChannel(Activity activity, BinaryMessenger messenger, Context context) {
-        this.context = context;
-        this.activity = activity;
+    private void setupMethodChannel(BinaryMessenger messenger, @Nullable Context context, @Nullable Activity activity) {
+        if (context != null) {
+            this.context = context;
+            printManager = (PrintManager) context.getSystemService(Context.PRINT_SERVICE);
+        }
+        if (activity != null) {
+            this.activity = activity;
+        }
+
         channel = new MethodChannel(messenger, "net.nfet.printing");
         channel.setMethodCallHandler(this);
-        printManager = (PrintManager) activity.getSystemService(Context.PRINT_SERVICE);
     }
 
     private void teardownMethodChannel() {
-        this.context = null;
+        context = null;
         channel.setMethodCallHandler(null);
         channel = null;
+        printManager = null;
     }
 
     private void registerActivity(Activity activity) {
         this.activity = activity;
-        printManager = (PrintManager) activity.getSystemService(Context.PRINT_SERVICE);
     }
 
     private void unregisterActivity() {
         this.activity = null;
-        printManager = null;
     }
 
     @Override
     public void onWrite(PageRange[] pageRanges, ParcelFileDescriptor parcelFileDescriptor,
-            CancellationSignal cancellationSignal, WriteResultCallback writeResultCallback) {
+                        CancellationSignal cancellationSignal, WriteResultCallback writeResultCallback) {
         OutputStream output = null;
         try {
             output = new FileOutputStream(parcelFileDescriptor.getFileDescriptor());
             output.write(documentData, 0, documentData.length);
-            writeResultCallback.onWriteFinished(new PageRange[] {PageRange.ALL_PAGES});
+            writeResultCallback.onWriteFinished(new PageRange[]{PageRange.ALL_PAGES});
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -159,7 +165,7 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
 
     @Override
     public void onLayout(PrintAttributes oldAttributes, PrintAttributes newAttributes,
-            CancellationSignal cancellationSignal, LayoutResultCallback callback, Bundle extras) {
+                         CancellationSignal cancellationSignal, LayoutResultCallback callback, Bundle extras) {
         // Create a new PdfDocument with the requested page attributes
         mPdfDocument = new PrintedPdfDocument(context, newAttributes);
 
@@ -315,7 +321,7 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
     }
 
     private void convertHtml(String data, final PrintAttributes.MediaSize size,
-            final PrintAttributes.Margins margins, String baseUrl) {
+                             final PrintAttributes.Margins margins, String baseUrl) {
         final WebView webView = new WebView(context);
 
         webView.loadDataWithBaseURL(baseUrl, data, "text/HTML", "UTF-8", null);
