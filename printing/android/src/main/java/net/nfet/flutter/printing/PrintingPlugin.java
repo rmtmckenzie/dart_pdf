@@ -117,10 +117,9 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
     private void setupMethodChannel(BinaryMessenger messenger, @Nullable Context context, @Nullable Activity activity) {
         if (context != null) {
             this.context = context;
-            printManager = (PrintManager) context.getSystemService(Context.PRINT_SERVICE);
         }
         if (activity != null) {
-            this.activity = activity;
+            registerActivity(activity);
         }
 
         channel = new MethodChannel(messenger, "net.nfet.printing");
@@ -131,14 +130,16 @@ public class PrintingPlugin extends PrintDocumentAdapter implements MethodCallHa
         context = null;
         channel.setMethodCallHandler(null);
         channel = null;
-        printManager = null;
+        unregisterActivity();
     }
 
     private void registerActivity(Activity activity) {
+        printManager = (PrintManager) activity.getSystemService(Context.PRINT_SERVICE);
         this.activity = activity;
     }
 
     private void unregisterActivity() {
+        printManager = null;
         this.activity = null;
     }
 
